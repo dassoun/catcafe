@@ -1,0 +1,302 @@
+/**
+ *------
+ * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
+ * catcafe implementation : © Julien Coignet <breddabasse@hotmail.com>
+ *
+ * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
+ * See http://en.boardgamearena.com/#!doc/Studio for more information.
+ * -----
+ *
+ * catcafe.css
+ *
+ * catcafe stylesheet
+ *
+ */
+
+/*
+    This is the CSS stylesheet of your game User Interface.
+    
+    Styles defined on this file will be applied to the HTML elements you define in your
+    HTML template (catcafe_catcafe.tpl), and to HTML elements you create dynamically
+    (in catcafe.js).
+    
+    Usually, you are using CSS to:
+    
+    1°) define the overall layout of your game
+        (ex: place the board on the top left, place player's hand beside, place the deck on the right, ...).
+
+    2°) create your CSS-sprites:
+        All images of your games should be gathered into a small number of image files. Then, using
+        background-image and background-position CSS properties, you create HTML blocks that can 
+        display these images correctly (see example below).
+    
+    3°) ... anything else:
+        It is really easy to add and remove CSS classes dynamically from your Javascript with
+        dojo.addClass and dojo.removeClass. It is also easy to check if an element has a class
+        (dojo.hasClass) or to get all elements with a specific class (dojo.query). This is why,
+        very often, using CSS classes for the logic of your user interface allow you to do complex
+        thing easily.
+        
+        
+     Note: on the production platform, this file will be compressed and comments will be removed.
+           Consequently, don't hesitate to put as many comments as necessary.
+*/
+
+
+/* Note: you must not use any @import directive */
+
+
+/********* You can start writing your CSS below this line: **********/
+#ctc_game_area {
+    position: relative;
+}
+
+.ctc_player_board {
+    float:left;
+    position: relative;
+    margin: 10px 20px;
+    width: 425px;
+	height: 700px;
+    background-image: url( 'img/catcafe_sheet.jpg' );
+}
+
+.ctc_player_name {
+    position: relative;
+    margin: auto;
+    width: 100px;
+	height: 40px;
+}
+
+.ctc_square {
+    position: relative;
+    width: 61px;
+    height: 52px;
+    /* opacity: 0.5;
+    background-color: #0000ff; */
+    background-repeat: no-repeat;
+    background-image: url( 'img/drawings_black.png' );
+}
+
+.ctc_square:hover {
+    /* background-color: red;
+    opacity: 0.5; */
+}
+
+.ctc_square_selectionnable:hover {
+    /* background-color: green;
+    opacity: 0.5; */
+    background-position: -462px 0px;
+    cursor: pointer;
+}
+
+.ctc_square_clickable {
+    cursor: pointer;
+    opacity: 0.2;
+}
+
+/* .ctc_square_clickable:hover {
+    background-color: red;
+    opacity: 0.5;
+} */
+
+
+
+.ctc_square_0 { background-position: 0px 0px; }
+.ctc_square_1 { background-position: -66px 0px; }
+.ctc_square_2 { background-position: -132px 0px; }
+.ctc_square_3 { background-position: -198px 0px; }
+.ctc_square_4 { background-position: -264px 0px; }
+.ctc_square_5 { background-position: -330px 0px; }
+.ctc_square_6 { background-position: -396px 0px; }
+.ctc_square_selected { background-position: -462px 0px; }
+
+#ctc_dice_area {
+    float: left;
+    position: relative;
+	height: 750px;
+    margin: 10px;
+    vertical-align: middle;
+}
+
+.ctc_dice {
+    position: relative;
+    width: 35px;
+    height : 35px;
+    background-image: url( 'img/35_35_dice.png' );
+    background-repeat: no-repeat;
+    z-index: 500;
+    /* box-sizing: border-box; */
+}
+
+.ctc_dice_clickable {
+    cursor: pointer;
+}
+
+.ctc_dice_0 { background-position: 0px 0px; }
+.ctc_dice_1 { background-position: -35px 0px; }
+.ctc_dice_2 { background-position: -70px 0px; }
+.ctc_dice_3 { background-position: -105px 0px; }
+.ctc_dice_4 { background-position: -140px 0px; }
+.ctc_dice_5 { background-position: -175px 0px; }
+.ctc_dice_6 { background-position: -210px 0px; }
+
+.ctc_dice_player {
+    position: relative;
+    /* border: 1px dashed black; */
+    border: 1px solid transparent;
+    border-radius: 5px;
+}
+
+.ctc_dice_player_selectionnable {
+    border: 1px dashed black;
+}
+
+.ctc_selected {
+    /* position: relative;
+    border: 1px;
+    border-style: dashed;
+    border-radius: 5px; */
+    border-color: rgba(255, 0, 0, 0.6);
+    border: 3px;
+}
+
+.ctc_dice_selected {
+    /* position: relative;
+    border: 1px;
+    border-style: dashed;
+    border-radius: 5px; */
+    border: 1px dashed red;
+}
+
+.cc_hex {
+    position: relative;
+    height: 100px;
+    width: 100px;
+    border: 30px solid #999;
+}
+
+.clickable {
+	cursor: pointer;
+}
+
+.ctc_column_scoring {
+    position: relative;
+    height: 25px;
+    width: 25px;
+    background-image: url( 'img/column_scoring.png' );
+}
+
+.ctc_column_scoring_empty { background-position: 0px 0px; }
+.ctc_column_scoring_validated { background-position: -25px 0px; }
+.ctc_column_scoring_erased { background-position: -50px 0px; }
+
+.ctc_shape_selection {
+    position: relative;
+    height: 30px;
+    width: 55px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+}
+
+.ctc_shape_selectionnable {
+    cursor: pointer;
+    border: 1px dashed black;
+}
+
+.ctc_cat_footprint {
+    position: relative;
+    height: 28px;
+    width: 28px;
+    opacity: 0.8;
+    background-image: url( 'img/catfootprint.png' );
+}
+
+.ctc_cat_footprint_0 { background-position: 0px 0px; }
+.ctc_cat_footprint_1 { background-position: -28px 0px; }
+.ctc_cat_footprint_2 { background-position: -56px 0px; }
+.ctc_cat_footprint_3 { background-position: -84px 0px; }
+
+.ctc_cat_selection {
+    position: relative;
+    height: 82px;
+    width: 42px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+}
+
+.ctc_cat_selectionnable {
+    cursor: pointer;
+    border: 1px dashed black;
+}
+
+.ctc_sub_scoring {
+    position: relative;
+    height: 20px;
+    width: 25px;
+    border: 1px;
+    /* border-style: dashed; */
+    border-radius: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    line-height: 22px;
+}
+
+/* Player side board */
+.ctc_psb_footprint {
+    width: 15px;
+	height: 14px;
+	display: inline-block;
+    position: relative;
+    background-repeat: no-repeat;
+    margin-top: 4px;
+    margin-right: 3px;
+}
+
+.ctc_psb_footprint_available {
+    background-image: url( 'img/footprint.png');
+}
+
+.ctc_psb_footprint_used {
+    background-image: url( 'img/used_footprint.png');
+}
+
+.ctc_psb_board {
+	clear: both;
+}
+
+.ctc_log_dice {
+    display:inline-block;
+    height: 30px;
+    width: 30px;
+    background-image: url( 'img/30_30_colored_dice.png' );
+}
+
+.ctc_log_dice_1 { background-position: 0px 0px; }
+.ctc_log_dice_2 { background-position: -30px 0px; }
+.ctc_log_dice_3 { background-position: -60px 0px; }
+.ctc_log_dice_4 { background-position: -90px 0px; }
+.ctc_log_dice_5 { background-position: -120px 0px; }
+.ctc_log_dice_6 { background-position: -150px 0px; }
+
+/*
+    Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):
+
+    .white_token {
+        background-image: url('img/tokens.png');
+        background-position: 0px 0px;
+    }
+    .black_token {
+        background-image: url('img/tokens.png');
+        background-position: -20px 0px;
+    }
+    .token {
+        width: 20px;
+        height: 20px;
+        background-repeat: none;
+    }
+*/
+
+
+
+
