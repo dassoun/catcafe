@@ -125,11 +125,13 @@
     background-image: url( 'img/35_35_dice.png' );
     background-repeat: no-repeat;
     z-index: 500;
+    border: 1px solid transparent;
     /* box-sizing: border-box; */
 }
 
 .ctc_dice_clickable {
     cursor: pointer;
+    border: 1px dashed black;
 }
 
 .ctc_dice_0 { background-position: 0px 0px; }

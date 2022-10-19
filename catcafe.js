@@ -378,6 +378,8 @@ function (dojo, declare) {
                             if (dices[id].player_id == null) {
                                 let elmt_id = 'dice_'+dices[id].id+'_'+dices[id].dice_value;
                                 let elmt = $(elmt_id);
+
+                                dojo.addClass(elmt, 'ctc_dice_clickable');
     
                                 this.connections.push( dojo.connect( elmt , 'click', () => this.onClickDice(elmt_id) ) );
     
@@ -404,7 +406,7 @@ function (dojo, declare) {
                             let elmt_id = 'dice_player_'+player_id+'_'+i;
                             let elmt = $(elmt_id);
 
-                            dojo.addClass( elmt_id, 'ctc_dice_player_selectionnable' );
+                            eee
 
                             this.connections.push( dojo.connect( elmt , 'click', () => this.onClickPlayerDice(elmt_id) ) );
                         }
@@ -1367,11 +1369,15 @@ function (dojo, declare) {
 
             // console.log(notif.args);
 
-            var slide = this.slideToObject( $( 'dice_' + notif.args.dice_id + "_" + notif.args.dice_face ), $( 'dice_player_' + notif.args.player_id + '_0' ), 1000 );
+            picked_dice = 'dice_' + notif.args.dice_id + "_" + notif.args.dice_face;
+
+            dojo.removeClass( picked_dice, 'ctc_dice_clickable' );
+
+            var slide = this.slideToObject( $( picked_dice ), $( 'dice_player_' + notif.args.player_id + '_0' ), 1000 );
             dojo.connect( slide, 'onEnd', this, dojo.hitch( this, function() {
         			    dojo.addClass( 'dice_player_' + notif.args.player_id + '_0', 'ctc_dice_' + notif.args.dice_face );
 
-                        dojo.destroy( 'dice_' + notif.args.dice_id + "_" + notif.args.dice_face );
+                        dojo.destroy( picked_dice );
        	    }));
             slide.play();
         },
