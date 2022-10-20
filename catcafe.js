@@ -406,8 +406,6 @@ function (dojo, declare) {
                             let elmt_id = 'dice_player_'+player_id+'_'+i;
                             let elmt = $(elmt_id);
 
-                            eee
-
                             this.connections.push( dojo.connect( elmt , 'click', () => this.onClickPlayerDice(elmt_id) ) );
                         }
                     }
