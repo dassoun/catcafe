@@ -149,7 +149,8 @@
     border-radius: 5px;
 }
 
-.ctc_dice_player_selectionnable {
+.ctc_dice_player_clickable {
+    cursor: pointer;
     border: 1px dashed black;
 }
 

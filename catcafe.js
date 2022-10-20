@@ -381,7 +381,7 @@ function (dojo, declare) {
 
                                 dojo.addClass(elmt, 'ctc_dice_clickable');
     
-                                this.connections.push( dojo.connect( elmt , 'click', () => this.onClickDice(elmt_id) ) );
+                                this.connections.push( dojo.connect( elmt , 'click', () => this.onClickDice(elmt_id, dices) ) );
     
                                 // console.log( "elmt_id :" + elmt_id );
                             }
@@ -405,6 +405,8 @@ function (dojo, declare) {
                         for (let i=0; i<2; i++) {
                             let elmt_id = 'dice_player_'+player_id+'_'+i;
                             let elmt = $(elmt_id);
+
+                            dojo.addClass( elmt, 'ctc_dice_player_clickable');
 
                             this.connections.push( dojo.connect( elmt , 'click', () => this.onClickPlayerDice(elmt_id) ) );
                         }
@@ -522,7 +524,7 @@ function (dojo, declare) {
                     let elmt_id = 'dice_player_'+player_id+'_'+i;
                     let elmt = $(elmt_id);
 
-                    dojo.removeClass( elmt_id, 'ctc_dice_player_selectionnable' );
+                    dojo.removeClass( elmt_id, 'ctc_dice_player_clickable' );
                 }
                             
                 dojo.forEach(this.connections, dojo.disconnect);
@@ -629,7 +631,7 @@ function (dojo, declare) {
         //     dojo.stopEvent( evt );
         // },
 
-        onClickDice: function( elmt_id )
+        onClickDice: function( elmt_id, dices )
         {
             // console.log( '$$$$ Event : onClickDice' );
 
@@ -642,6 +644,11 @@ function (dojo, declare) {
             // console.log( '$$$$ Selected dice : (' + dice_id + ')' );
             
             if ( this.isCurrentPlayerActive() ) {
+                for (let dice of dices) {
+                    if (dice.player_id == null) {
+                        dojo.removeClass( 'dice_'+dice.id+'_'+dice.dice_value, 'ctc_dice_clickable' );
+                    }
+                }
                 this.ajaxcall( "/catcafe/catcafe/pickDice.html", { lock: true, dice_id: dice_id, dice_face: dice_face }, this, function( result ) {}, function( is_error ) {} );
             }
         },
@@ -1368,8 +1375,6 @@ function (dojo, declare) {
             // console.log(notif.args);
 
             picked_dice = 'dice_' + notif.args.dice_id + "_" + notif.args.dice_face;
-
-            dojo.removeClass( picked_dice, 'ctc_dice_clickable' );
 
             var slide = this.slideToObject( $( picked_dice ), $( 'dice_player_' + notif.args.player_id + '_0' ), 1000 );
             dojo.connect( slide, 'onEnd', this, dojo.hitch( this, function() {

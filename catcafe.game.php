@@ -1248,7 +1248,7 @@ class catcafe extends Table
         $sql = "SELECT id, dice_value FROM dice WHERE player_id IS NULL";
         $diceCommon = self::getObjectFromDb( $sql );
         $res['diceCommon'] = $diceCommon;
-
+        
         // var_dump($res);
 
         return $res;
