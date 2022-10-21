@@ -28,7 +28,7 @@ $gameinfos = array(
 'publisher' => 'Alley Cat Games',                     
 
 // Url of game publisher website
-'publisher_website' => 'http://www.mypublishingcompany.com/',   
+'publisher_website' => 'https://www.alleycatgames.com/',   
 
 // Board Game Geek ID of the publisher
 'publisher_bgg_id' => 34033,
