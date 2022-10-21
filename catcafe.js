@@ -62,6 +62,28 @@ function (dojo, declare) {
             // let col_completed = [0, 0, 0, 0, 0];
 
             // Setting up player boards
+            let array_player_board_to_place = [];
+
+            // Current player first, or every boards if the viewer is a spectator
+            for( var player_id in gamedatas.players )
+            {
+                if ( player_id == this.player_id || this.isSpectator ) {
+                    dojo.place( this.format_block('jstpl_ctc_player_board', {
+                        player:player_id,
+                    } ), $ ( 'ctc_game_area' ) );
+                } else {
+                    array_player_board_to_place.push(player_id);
+                }
+            }
+
+            // then, the remaining player boards
+            for(let i = 0; i < array_player_board_to_place.length; i++){
+                dojo.place( this.format_block('jstpl_ctc_player_board', {
+                    player:array_player_board_to_place[i],
+                } ), $ ( 'ctc_game_area' ) );
+            }
+
+
             for( var player_id in gamedatas.players )
             {
                 var player = gamedatas.players[player_id];
@@ -71,17 +93,11 @@ function (dojo, declare) {
                 var player_board_div = $('player_board_'+player_id);
                 dojo.place( this.format_block('jstpl_player_side_board', { player_id:player_id } ), player_board_div );
 
-
-                dojo.place( this.format_block('jstpl_player_board', {
-                    player:player_id,
-
-                } ), $ ( 'ctc_game_area' ) );
-
                 dojo.place( this.format_block('jstpl_player_name', {
                     player:player_id,
-                } ), $ ( 'player_board_' + player_id) );
+                } ), $ ( 'ctc_player_board_' + player_id) );
 
-                this.slideToObjectPos( $('player_name_'+player_id), $('player_board_'+player_id), 230, 5, 10 ).play();
+                this.slideToObjectPos( $('player_name_'+player_id), $('ctc_player_board_'+player_id), 230, 5, 10 ).play();
                 $('player_name_'+player_id).innerHTML = gamedatas.players[player_id].name
                 dojo.style( 'player_name_'+player_id, 'color', '#'+gamedatas.players[player_id].color );
 
@@ -97,9 +113,9 @@ function (dojo, declare) {
                 //         x:squaresposition.x,
                 //         y:squaresposition.y,
                 //         player:player_id,
-                //     } ), $ ( 'player_board_' + player_id) );
+                //     } ), $ ( 'ctc_player_board_' + player_id) );
 
-                //     this.slideToObjectPos( $('square_'+player_id+'_'+squaresposition.x+'_'+squaresposition.y), $('player_board_'+player_id), this.getXPixelCoordinates(squaresposition.x), this.getYPixelCoordinates(squaresposition.y, squaresposition.x), 10 ).play();
+                //     this.slideToObjectPos( $('square_'+player_id+'_'+squaresposition.x+'_'+squaresposition.y), $('ctc_player_board_'+player_id), this.getXPixelCoordinates(squaresposition.x), this.getYPixelCoordinates(squaresposition.y, squaresposition.x), 10 ).play();
                 // }
 
                 for( var id in gamedatas.drawings[player_id] )
@@ -114,9 +130,9 @@ function (dojo, declare) {
                         y:square.y,
                         player:player_id,
                         shape:square.shape,
-                    } ), $ ( 'player_board_' + player_id) );
+                    } ), $ ( 'ctc_player_board_' + player_id) );
 
-                    this.slideToObjectPos( $('square_'+player_id+'_'+square.x+'_'+square.y), $('player_board_'+player_id), this.getXPixelCoordinates(square.x), this.getYPixelCoordinates(square.y, square.x), 10 ).play();
+                    this.slideToObjectPos( $('square_'+player_id+'_'+square.x+'_'+square.y), $('ctc_player_board_'+player_id), this.getXPixelCoordinates(square.x), this.getYPixelCoordinates(square.y, square.x), 10 ).play();
                     if (square.shape > 0) {
                         dojo.removeClass('square_'+player_id+'_'+square.x+'_'+square.y, 'ctc_square_0');
                         dojo.addClass('square_'+player_id+'_'+square.x+'_'+square.y, 'ctc_square_'+square.shape);
@@ -129,15 +145,15 @@ function (dojo, declare) {
                         player_id:player_id,
                         id1:i,
                         id2:0,
-                    } ), $ ( 'player_board_' + player_id) );
-                    this.slideToObjectPos( $('sub_scoring_'+player_id+'_'+i+'_0'), $('player_board_'+player_id), this.getXPixelCoordinatesSubScoringColumn(i), this.getYPixelCoordinatesSubScoringColumn(i), 10 ).play();
+                    } ), $ ( 'ctc_player_board_' + player_id) );
+                    this.slideToObjectPos( $('sub_scoring_'+player_id+'_'+i+'_0'), $('ctc_player_board_'+player_id), this.getXPixelCoordinatesSubScoringColumn(i), this.getYPixelCoordinatesSubScoringColumn(i), 10 ).play();
                     
                     dojo.place( this.format_block('jstpl_column_scoring', {
                         player_id:player_id,
                         id1:i,
                         id2:1,
-                    } ), $ ( 'player_board_' + player_id) );
-                    this.slideToObjectPos( $('sub_scoring_'+player_id+'_'+i+'_1'), $('player_board_'+player_id), this.getXPixelCoordinatesSubScoringColumn(i) + 17, this.getYPixelCoordinatesSubScoringColumn(i), 10 ).play();
+                    } ), $ ( 'ctc_player_board_' + player_id) );
+                    this.slideToObjectPos( $('sub_scoring_'+player_id+'_'+i+'_1'), $('ctc_player_board_'+player_id), this.getXPixelCoordinatesSubScoringColumn(i) + 17, this.getYPixelCoordinatesSubScoringColumn(i), 10 ).play();
                 }
 
                 // player dice
@@ -146,19 +162,19 @@ function (dojo, declare) {
                         dice_face:0,
                         player_id:player_id,
                         id:i,
-                    } ), $ ( 'player_board_' + player_id) );
+                    } ), $ ( 'ctc_player_board_' + player_id) );
                 }
-                this.slideToObjectPos( $('dice_player_'+player_id+'_0'), $('player_board_'+player_id), 52, 7, 10 ).play();
-                this.slideToObjectPos( $('dice_player_'+player_id+'_1'), $('player_board_'+player_id), 92, 7, 10 ).play();
+                this.slideToObjectPos( $('dice_player_'+player_id+'_0'), $('ctc_player_board_'+player_id), 52, 7, 10 ).play();
+                this.slideToObjectPos( $('dice_player_'+player_id+'_1'), $('ctc_player_board_'+player_id), 92, 7, 10 ).play();
 
                 // Shapes selection
                 for (let i=1; i<7; i++) {
                     dojo.place( this.format_block('jstpl_shape_selection', {
                         player_id:player_id,
                         shape_id:i,
-                    } ), $ ( 'player_board_' + player_id) );
+                    } ), $ ( 'ctc_player_board_' + player_id) );
 
-                    this.slideToObjectPos( $('shape_selection_'+player_id+'_'+i), $('player_board_'+player_id), this.getXPixelCoordinatesShapeSelection(i), this.gameConstants['SHAPE_SELECTION_Y_ORIGIN'], 10 ).play();
+                    this.slideToObjectPos( $('shape_selection_'+player_id+'_'+i), $('ctc_player_board_'+player_id), this.getXPixelCoordinatesShapeSelection(i), this.gameConstants['SHAPE_SELECTION_Y_ORIGIN'], 10 ).play();
                 }
 
                 // Cat footprints
@@ -170,9 +186,9 @@ function (dojo, declare) {
                         player_id:player_id,
                         id:i,
                         state:2,
-                    } ), $ ( 'player_board_' + player_id) );
+                    } ), $ ( 'ctc_player_board_' + player_id) );
 
-                    this.slideToObjectPos( $('cat_footprint_'+player_id+'_'+i), $('player_board_'+player_id), this.getXPixelCoordinatesFootprints(i), this.getYPixelCoordinatesFootprints(i), 10 ).play();
+                    this.slideToObjectPos( $('cat_footprint_'+player_id+'_'+i), $('ctc_player_board_'+player_id), this.getXPixelCoordinatesFootprints(i), this.getYPixelCoordinatesFootprints(i), 10 ).play();
                 }
                 // console.log('available : '+available);
                 for (let i=used; i<used+available; i++) {
@@ -180,18 +196,18 @@ function (dojo, declare) {
                         player_id:player_id,
                         id:i,
                         state:1,
-                    } ), $ ( 'player_board_' + player_id) );
+                    } ), $ ( 'ctc_player_board_' + player_id) );
 
-                    this.slideToObjectPos( $('cat_footprint_'+player_id+'_'+i), $('player_board_'+player_id), this.getXPixelCoordinatesFootprints(i), this.getYPixelCoordinatesFootprints(i), 10 ).play();
+                    this.slideToObjectPos( $('cat_footprint_'+player_id+'_'+i), $('ctc_player_board_'+player_id), this.getXPixelCoordinatesFootprints(i), this.getYPixelCoordinatesFootprints(i), 10 ).play();
                 }
                 for (let i=available + used; i<18; i++) {
                     dojo.place( this.format_block('jstpl_cat_footprint', {
                         player_id:player_id,
                         id:i,
                         state:0,
-                    } ), $ ( 'player_board_' + player_id) );
+                    } ), $ ( 'ctc_player_board_' + player_id) );
 
-                    this.slideToObjectPos( $('cat_footprint_'+player_id+'_'+i), $('player_board_'+player_id), this.getXPixelCoordinatesFootprints(i), this.getYPixelCoordinatesFootprints(i), 10 ).play();
+                    this.slideToObjectPos( $('cat_footprint_'+player_id+'_'+i), $('ctc_player_board_'+player_id), this.getXPixelCoordinatesFootprints(i), this.getYPixelCoordinatesFootprints(i), 10 ).play();
                 }
 
                 // Cat footprints on personnal board
@@ -203,9 +219,9 @@ function (dojo, declare) {
                     dojo.place( this.format_block('jstpl_cat_selection', {
                         player_id:player_id,
                         id:i,
-                    } ), $ ( 'player_board_' + player_id) );
+                    } ), $ ( 'ctc_player_board_' + player_id) );
 
-                    this.slideToObjectPos( $('cat_selection_'+player_id+'_'+i), $('player_board_'+player_id), this.getXPixelCoordinatesCatSelection(i - 1), this.getYPixelCoordinatesCatSelection(i), 10 ).play();
+                    this.slideToObjectPos( $('cat_selection_'+player_id+'_'+i), $('ctc_player_board_'+player_id), this.getXPixelCoordinatesCatSelection(i - 1), this.getYPixelCoordinatesCatSelection(i), 10 ).play();
                 }
 
                 // Sub scoring
@@ -213,9 +229,9 @@ function (dojo, declare) {
                     dojo.place( this.format_block('jstpl_sub_scoring', {
                         player_id:player_id,
                         id:i,
-                    } ), $ ( 'player_board_' + player_id) );
+                    } ), $ ( 'ctc_player_board_' + player_id) );
 
-                    this.slideToObjectPos( $('sub_scoring_'+player_id+'_'+i), $('player_board_'+player_id), this.getXPixelCoordinatesSubScoring(i - 1), this.getYPixelCoordinatesSubScoring(i), 10 ).play();
+                    this.slideToObjectPos( $('sub_scoring_'+player_id+'_'+i), $('ctc_player_board_'+player_id), this.getXPixelCoordinatesSubScoring(i - 1), this.getYPixelCoordinatesSubScoring(i), 10 ).play();
                 }
 
                 // // Columns scoring
@@ -1455,7 +1471,7 @@ function (dojo, declare) {
                 value: shape,
                 x: x,
                 y:y
-            } ) , 'player_board_'+player_id );
+            } ) , 'ctc_player_board_'+player_id );
             
             var parameters = {
                 x: x,

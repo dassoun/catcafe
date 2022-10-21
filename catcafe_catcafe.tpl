@@ -50,7 +50,7 @@
 var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${MY_ITEM_ID}"></div>';
 
 */
-var jstpl_player_board='<div class="ctc_player_board" id="player_board_${player}"></div>';
+var jstpl_ctc_player_board='<div class="ctc_player_board" id="ctc_player_board_${player}"></div>';
 
 var jstpl_player_name='<div class="ctc_player_name" id="player_name_${player}"></div>';
 
