@@ -58,150 +58,162 @@ $machinestates = array(
         "description" => "",
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => array( "" => 2 )
+        "transitions" => array( "" => 10 )
     ),
     
-    // Note: ID=2 => your first state
-    2 => array(
+    // Note: ID=10 => your first state
+    10 => array(
         "name" => "rollDices",
         "description" => '',
         "type" => "game",
         "action" => "stRollDices",
-        "transitions" => array( "" => 3 )
+        "transitions" => array( "" => 20 )
     ),
 
-    3 => array(
+    20 => array(
         "name" => "setupDices",
         "description" => '',
         "type" => "game",
         "args" => "argSetupDices",
         "action" => "stSetupDices",
-        "transitions" => array( "" => 4 )
+        "transitions" => array( "" => 30 )
     ),
 
-    4 => array(
+    30 => array(
         "name" => "playerTurnPicking",
         "description" => clienttranslate('${actplayer} must pick a dice.'),
         "descriptionmyturn" => clienttranslate('${you} must pick a dice.'),
         "type" => "activeplayer",
         "args" => "argPlayerTurnPicking",
         "possibleactions" => array( "pickDice" ),
-        "transitions" => array( "dicePicked" => 5 )
+        "transitions" => array( "dicePicked" => 40 )
     ),
 
-    5 => array(
+    40 => array(
         "name" => "nextPlayerPicking",
         "description" => '',
         "type" => "game",
         "action" => "stNextPlayerPicking",
-        "transitions" => array( "stayOnPicking" => 4, "goToSetupDrawing" => 6 )
+        "transitions" => array( "stayOnPicking" => 30, "goToSetupDrawing" => 50 )
     ),
 
-    6 => array(
+    50 => array(
         "name" => "setupDrawing",
         "description" => '',
         "type" => "game",
         "action" => "stSetupDrawing",
-        "transitions" => array( "" => 7 )
+        "transitions" => array( "" => 60 )
     ),
 
-    7 => array(
+    60 => array(
+        "name" => "multiplayerDrawingPhase",
+        "description" => clienttranslate('Waiting for other players to end their turn.'),
+        "descriptionmyturn" => clienttranslate('${you} must do your turn'), // Won't be displayed anyway since each private state has its own description
+        "type" => "multipleactiveplayer",
+        "initialprivate" => 70, // This makes this state a master multiactive state and enables private states, this is also a first private state
+        "action" => "stMultiplayerDrawingPhase",
+        // "args" => "argMultiplayerDrawingPhase",
+        //"possibleactions" => ["changeMind"], //this action is possible if player is not in any private state which usually happens when they are inactive
+        "transitions" => array( "" => 110 ) // this is normal next transition which will happen after all players finish their turns 
+    ),
+
+    70 => array(
         // Choose a 1rst dice for location, or pass
         "name" => "playerTurnDrawingPhase1",
         "description" => clienttranslate('${actplayer} must choose a dice for location, or pass.'),
         "descriptionmyturn" => clienttranslate('${you} must choose a dice for location, or pass.'),
-        "type" => "activeplayer",
+        "type" => "private",
         "args" => "argPlayerTurnDrawingPhase1",
         "possibleactions" => array( "pass", "chooseDiceForLocation" ),
-        "transitions" => array( "passed" => 8, "diceForLocationChosen" => 9, "nextRound" => 12 )
+        "transitions" => array( "passed" => 70, "diceForLocationChosen" => 80, "nextRound" => 110 )
     ),
 
-    8 => array(
-        "name" => "nextPlayerDrawing",
-        "description" => '',
-        "type" => "game",
-        "action" => "stNextPlayerDrawing",
-        "transitions" => array( "stayOnDrawing" => 7, "goToNextRound" => 11 )
-    ),
+    // 70 => array(
+    //     "name" => "nextPlayerDrawing",
+    //     "description" => '',
+    //     "type" => "game",
+    //     "action" => "stNextPlayerDrawing",
+    //     "transitions" => array( "stayOnDrawing" => 60, "goToNextRound" => 100 )
+    // ),
 
-    9 => array(
+    80 => array(
         // Choose a location for drawing according to the chosen dice
         "name" => "playerTurnDrawingPhase2",
         "description" => clienttranslate('${actplayer} must choose where to draw.'),
         "descriptionmyturn" => clienttranslate('${you} must choose where to draw.'),
-        "type" => "activeplayer",
+        "type" => "private",
         "args" => "argPlayerTurnDrawingPhase2",
         "possibleactions" => array( "chooseDrawingLocation", "cancelLocationDiceChoice" ),
-        "transitions" => array( "drawingLocationChosen" => 10, "locationDiceChoiceCancelled" => 7 )
+        "transitions" => array( "drawingLocationChosen" => 90, "locationDiceChoiceCancelled" => 70 )
     ),
 
-    10 => array(
+    90 => array(
         // Choose a shape to draw
         "name" => "playerTurnDrawingPhase3",
         "description" => clienttranslate('${actplayer} must choose a shape.'),
         "descriptionmyturn" => clienttranslate('${you} must choose a shape.'),
-        "type" => "activeplayer",
+        "type" => "private",
         "args" => "argPlayerTurnDrawingPhase3",
         "possibleactions" => array( "chooseShape", "cancelLocationChoice" ),
-        "transitions" => array( "shapeChosen" => 12, "chooseCat" => 11, "locationChoiceCancelled" => 7 )
+        "transitions" => array( "shapeChosen" => 110, "chooseCat" => 100, "locationChoiceCancelled" => 70 )
     ),
 
-    11 => array(
+    100 => array(
         // Choose a cat
         "name" => "playerTurnCatSelection",
         "description" => clienttranslate('${actplayer} must choose a cat.'),
         "descriptionmyturn" => clienttranslate('${you} must choose a cat.'),
-        "type" => "activeplayer",
+        "type" => "private",
         "args" => "argPlayerTurnCatSelection",
         "possibleactions" => array( "chooseCat", "cancelShapeChoice" ),
-        "transitions" => array( "catChosen" => 12, "shapeChoiceCancelled" => 7 )
+        "transitions" => array( "catChosen" => 110, "shapeChoiceCancelled" => 70 )
     ),
 
     // Next player for same round or column scoring ?
-    12 => array(
-        "name" => "endPlayerTurn",
-        "description" => '',
-        "type" => "game",
-        "action" => "stEndPlayerTurn",
-        "transitions" => array( "nextPlayer" => 8, "goColumnScoring" => 13 )
-    ),
+    // 110 => array(
+    //     "name" => "endPlayerTurn",
+    //     "description" => '',
+    //     "type" => "game",
+    //     "action" => "stEndPlayerTurn",
+    //     "transitions" => array( "nextPlayer" => 70, "goColumnScoring" => 120 )
+    // ),
 
-    13 => array(
+    110 => array(
         "name" => "columnScoring",
         "description" => '',
         "type" => "game",
         "action" => "stColumnScoring",
-        "transitions" => array( "nextRound" => 14 )
+        "transitions" => array( "nextRound" => 120 )
     ),
 
     // New round or end game => stats calculation ?
-    14 => array(
+    120 => array(
         "name" => "nextRound",
         "description" => '',
         "type" => "game",
         "action" => "stNextRound",
-        "transitions" => array( "goToCleanBoardForNextRound" => 15, "goStatsCalculation" => 17 )
+        "transitions" => array( "goToCleanBoardForNextRound" => 130, "goStatsCalculation" => 150 )
     ),
 
-    15 => array(
+    130 => array(
         "name" => "cleanBoardForNextRound",
         "description" => '',
         "type" => "game",
         "args" => "argCleanBoardForNextRound",
         "action" => "stCleanBoardForNextRound",
-        "transitions" => array( "goToSetupNewRound" => 16 )
+        "transitions" => array( "goToSetupNewRound" => 140 )
     ),
 
-    16 => array(
+    140 => array(
         "name" => "setupNewRound",
         "description" => '',
         "type" => "game",
         "args" => "argSetupNewRound",
         "action" => "stsetupNewRound",
-        "transitions" => array( "" => 2 )
+        "transitions" => array( "" => 10 )
     ),
 
-    17 => array(
+    150 => array(
         "name" => "statsCalculation",
         "description" => '',
         "type" => "game",

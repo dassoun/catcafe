@@ -790,7 +790,7 @@ class catcafe extends Table
         // Check that this is player's turn and that it is a "possible action" at this game state (see states.inc.php)
         self::checkAction( 'draw' ); 
         
-        $player_id = self::getActivePlayerId();
+        $player_id = self::getCurrentPlayerId();
 
         // Update board state
         $sql = "UPDATE drawing SET state = '$shape' WHERE player_id = '$player_id' AND coord_x = '$x' AND coord_y = '$y'";
@@ -799,7 +799,7 @@ class catcafe extends Table
         // Notify all players
         self::notifyAllPlayers( "drawn", clienttranslate( '${player_name} picked a dice' ), array(
             'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
+            'player_name' => self::getCurrentPlayerName(),
             'shape' => $shape,
             'player_id' => $player_id,
             'x' => $x,
@@ -816,7 +816,7 @@ class catcafe extends Table
         // Check that this is player's turn and that it is a "possible action" at this game state (see states.inc.php)
         self::checkAction( 'pass' ); 
 
-        $player_id = self::getActivePlayerId();
+        $player_id = self::getCurrentPlayerId();
 
         // Update available footprints
         $sql = "UPDATE player SET has_passed = true, footprint_available = LEAST(footprint_available + ".$this->gameConstants["FOOTPRINTS_GAINED_PASSING"].", (".$this->gameConstants["FOOTPRINTS_TOTAL"]." - footprint_used)) WHERE player_id = '$player_id'";
@@ -827,25 +827,25 @@ class catcafe extends Table
         $footprint_available = $res["footprint_available"];
         $footprint_used = $res["footprint_used"];
 
-
         // Notify all players
         self::notifyAllPlayers( "passed", clienttranslate( '${player_name} passed' ), array(
             'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
+            'player_name' => self::getCurrentPlayerName(),
             'footprint_available' => $footprint_available,
             'footprint_used' => $footprint_used
             )
         );
 
-        // Go to next game state
-        $sql = "SELECT COUNT(*) AS nb FROM player WHERE has_passed = true OR (first_chosen_played_order IS NOT NULL AND second_chosen_played_order IS NOT NULL)";
-        $res = self::getObjectFromDB( $sql );
-        if ($res['nb'] < (self::getPlayersNumber())) {
-            $this->gamestate->nextState( "passed" );
-        } else {
-            $this->gamestate->nextState( "nextRound" );
-        }
+        // // Go to next game state
+        // $sql = "SELECT COUNT(*) AS nb FROM player WHERE has_passed = true OR (first_chosen_played_order IS NOT NULL AND second_chosen_played_order IS NOT NULL)";
+        // $res = self::getObjectFromDB( $sql );
+        // if ($res['nb'] < (self::getPlayersNumber())) {
+        //     $this->gamestate->nextState( "passed" );
+        // } else {
+        //     $this->gamestate->nextState( "nextRound" );
+        // }
         
+        $this->gamestate->setPlayerNonMultiactive( $player_id, "" );
     }
 
     function chooseDiceForLocation( $player_id, $num_player_dice, $player_dice_face ) {
@@ -853,7 +853,7 @@ class catcafe extends Table
         // Check that this is player's turn and that it is a "possible action" at this game state (see states.inc.php)
         self::checkAction( 'chooseDiceForLocation' ); 
 
-        $player_id = self::getActivePlayerId();
+        // $player_id = self::getActivePlayerId();
 
         // NEW ====================================
         // We check that the dice is still playable
@@ -880,43 +880,51 @@ class catcafe extends Table
         // Notify all players
         self::notifyAllPlayers( "diceForLocationChosen", clienttranslate( '${player_name} has chosen his first dice' ), array(
             'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
+            'player_name' => self::getCurrentPlayerName(),
             'first_chosen_dice_num' => $num_player_dice,
             'first_chosen_dice_val' => $player_dice_face,
             )
         );
 
         // Go to next game state
-        $this->gamestate->nextState( "diceForLocationChosen" );
+        //$this->gamestate->nextState( "diceForLocationChosen" );
+        $this->gamestate->nextPrivateState($player_id, "diceForLocationChosen");
     }
 
     function cancelLocationDiceChoice( $player_id ) {
         // Check that this is player's turn and that it is a "possible action" at this game state (see states.inc.php)
         self::checkAction( 'cancelLocationDiceChoice' ); 
 
-        $player_id = self::getActivePlayerId();
+        $player_id = self::getCurrentPlayerId();
 
         $sql = "UPDATE player SET first_chosen_played_order = null, second_chosen_played_order = null WHERE player_id = '$player_id'";
                 self::DbQuery($sql);
 
+        $sql = "SELECT footprint_available, footprint_used FROM player WHERE player_id = '$player_id'";
+        $res = self::getObjectFromDB($sql);
+        $footprint_available = $res['footprint_available'];
+        $footprint_used = $res['footprint_used'];
+
         // Notify all players
         self::notifyAllPlayers( "backToTurnDrawingPhase1", clienttranslate( '${player_name} has cancelled his action' ), array(
             'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
+            'player_name' => self::getCurrentPlayerName(),
             'x' => -1,
-            'y' => -1
+            'y' => -1,
+            'footprint_available' => $footprint_available,
+            'footprint_used' => $footprint_used
             )
         );
 
         // Go to next game state
-        $this->gamestate->nextState( "locationDiceChoiceCancelled" );
+        $this->gamestate->nextPrivateState( $player_id, "locationDiceChoiceCancelled" );
     }
 
     function cancelLocationChoice( $player_id ) {
         // Check that this is player's turn and that it is a "possible action" at this game state (see states.inc.php)
         self::checkAction( 'cancelLocationChoice' ); 
 
-        $player_id = self::getActivePlayerId();
+        $player_id = self::getCurrentPlayerId();
 
         $sql = "SELECT location_chosen FROM player WHERE player_id = '$player_id'";
         $location = self::getUniqueValueFromDB($sql);
@@ -943,7 +951,7 @@ class catcafe extends Table
         // Notify all players
         self::notifyAllPlayers( "backToTurnDrawingPhase1", clienttranslate( '${player_name} has cancelled his action' ), array(
             'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
+            'player_name' => self::getCurrentPlayerName(),
             'x' => $locations[0],
             'y' => $locations[1],
             'footprint_available' => $footprint_available,
@@ -952,14 +960,14 @@ class catcafe extends Table
         );
 
         // Go to next game state
-        $this->gamestate->nextState( "locationChoiceCancelled" );
+        $this->gamestate->nextPrivateState( $player_id, "locationChoiceCancelled" );
     }
 
     function cancelShapeChoice( $player_id ) {
         // Check that this is player's turn and that it is a "possible action" at this game state (see states.inc.php)
         self::checkAction( 'cancelShapeChoice' ); 
 
-        $player_id = self::getActivePlayerId();
+        $player_id = self::getCurrentPlayerId();
 
         $sql = "SELECT location_chosen FROM player WHERE player_id = '$player_id'";
         $location = self::getUniqueValueFromDB($sql);
@@ -986,7 +994,7 @@ class catcafe extends Table
         // Notify all players
         self::notifyAllPlayers( "backToTurnDrawingPhase1", clienttranslate( '${player_name} has cancelled his action' ), array(
             'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
+            'player_name' => self::getCurrentPlayerName(),
             'x' => $locations[0],
             'y' => $locations[1],
             'footprint_available' => $footprint_available,
@@ -995,7 +1003,7 @@ class catcafe extends Table
         );
         
         // Go to next game state
-        $this->gamestate->nextState( "shapeChoiceCancelled" );
+        $this->gamestate->nextPrivateState( $player_id, "shapeChoiceCancelled" );
     }
 
     function chooseDrawingLocation( $player_id, $x, $y ) {
@@ -1006,7 +1014,7 @@ class catcafe extends Table
         // self::dump( 'x', $x );
         // self::dump( 'y', $y );
 
-        $player_id = self::getActivePlayerId();
+        $player_id = self::getCurrentPlayerId();
 
         // We check that the square is available for drawing
         $sql = "SELECT state FROM drawing WHERE coord_x = '$x' AND coord_y = '$y' AND player_id = '$player_id'";
@@ -1055,13 +1063,13 @@ class catcafe extends Table
         );
 
         // Go to next game state
-        $this->gamestate->nextState( "drawingLocationChosen" );
+        $this->gamestate->nextPrivateState( $player_id, "drawingLocationChosen" );
     }
 
     function chooseShape( $player_id, $shape ) {
         self::checkAction( 'chooseShape' ); 
 
-        $player_id = self::getActivePlayerId();
+        $player_id = self::getCurrentPlayerId();
 
         // We check that he can select this shape
         $sql = "SELECT footprint_available, footprint_used, first_chosen_dice_num, first_chosen_dice_val, first_chosen_played_order, second_chosen_dice_num, second_chosen_dice_val, second_chosen_played_order, location_chosen FROM player WHERE player_id = '$player_id'";
@@ -1129,16 +1137,17 @@ class catcafe extends Table
         );
 
         if ($shape == $this->gameConstants["SHAPE_CAT_HOUSE"]) {
-            $this->gamestate->nextState( "chooseCat" );
+            $this->gamestate->nextPrivateState( $player_id, "chooseCat" );
         } else {
-            $this->gamestate->nextState( "shapeChosen" );
+            // $this->gamestate->nextState( "shapeChosen" );
+            $this->gamestate->setPlayerNonMultiactive( $player_id, "" );
         }
     }
 
     function chooseCat( $player_id, $cat ) {
         self::checkAction( 'chooseCat' ); 
 
-        $player_id = self::getActivePlayerId();
+        $player_id = self::getCurrentPlayerId();
 
         // We check that he can select this cat
         $sql = "SELECT location_chosen, score_cat_$cat FROM player WHERE player_id = '$player_id'";
@@ -1167,7 +1176,9 @@ class catcafe extends Table
             )
         );
 
-        $this->gamestate->nextState( "catChosen" );
+        // $this->gamestate->nextState( "catChosen" );
+        // $this->gamestate->nextState( "" );
+        $this->gamestate->setPlayerNonMultiactive( $player_id, "" );
     }
 
     /*
@@ -1221,7 +1232,7 @@ class catcafe extends Table
     {
         $playerBoards = self::getPlayerBoards();
 
-        $player_id = self::getActivePlayerId();
+        $player_id = self::getCurrentPlayerId();
 
         $sql = "SELECT dice_value FROM dice WHERE player_id = '$player_id'";
         $dice_1 = self::getObjectFromDb( $sql );
@@ -1259,7 +1270,7 @@ class catcafe extends Table
     {
         $playerBoards = self::getPlayerBoards();
 
-        $player_id = self::getActivePlayerId();
+        $player_id = self::getCurrentPlayerId();
 
         $sql = "SELECT footprint_available, first_chosen_dice_num, first_chosen_dice_val, first_chosen_played_order, second_chosen_dice_num, second_chosen_dice_val, second_chosen_played_order FROM player WHERE player_id = '$player_id'";
         $res = self::getObjectFromDb( $sql );
@@ -1301,7 +1312,7 @@ class catcafe extends Table
 
     function argPlayerTurnDrawingPhase3() 
     {
-        $player_id = self::getActivePlayerId();
+        $player_id = self::getCurrentPlayerId();
 
         $sql = "SELECT footprint_available, first_chosen_dice_num, first_chosen_dice_val, first_chosen_played_order, second_chosen_dice_num, second_chosen_dice_val, second_chosen_played_order FROM player WHERE player_id = '$player_id'";
         $res = self::getObjectFromDb( $sql );
@@ -1371,7 +1382,7 @@ class catcafe extends Table
 
     function argPlayerTurnCatSelection() 
     {
-        $player_id = self::getActivePlayerId();
+        $player_id = self::getCurrentPlayerId();
 
         $sql = "SELECT score_cat_1, score_cat_2, score_cat_3, score_cat_4, score_cat_5, score_cat_6 FROM player WHERE player_id = '$player_id'";
         $score_cat = self::getObjectFromDb( $sql );
@@ -1478,6 +1489,23 @@ class catcafe extends Table
 
             $this->gamestate->nextState("goToSetupDrawing");
         }
+    }
+
+    function stSetupDrawing()
+    {
+        // self::trace( "stSetupDrawing" );
+
+        $this->gamestate->nextState("");
+    }
+
+    function stMultiplayerDrawingPhase()
+    {
+        $this->gamestate->setAllPlayersMultiactive();
+        
+        //this is needed when starting private parallel states; players will be transitioned to initialprivate state defined in master state
+        $this->gamestate->initializePrivateStateForAllActivePlayers();
+
+        return;
     }
 
     function stEndPlayerTurn()
@@ -1595,13 +1623,6 @@ class catcafe extends Table
 
         // self::dump( 'notify_validated_col', $notify_validated_col );
         // self::dump( 'notify_erased_col', $notify_erased_col );
-
-        $this->gamestate->nextState("");
-    }
-
-    function stSetupDrawing()
-    {
-        // self::trace( "stSetupDrawing" );
 
         $this->gamestate->nextState("");
     }

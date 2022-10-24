@@ -254,7 +254,10 @@ function (dojo, declare) {
                 var location_chosen = gamedatas.players[player_id]["location_chosen"];
                 if (location_chosen != null) {
                     var coords = location_chosen.split(",");
-                    dojo.addClass( "square_"+player_id+"_"+coords[0]+"_"+coords[1], "ctc_square_selected" );
+                    if ( dojo.hasClass('square_'+player_id+'_'+coords[0]+'_'+coords[1], 'ctc_square_0') ) {
+                        dojo.removeClass( "square_"+player_id+"_"+coords[0]+"_"+coords[1], "ctc_square_0" );
+                        dojo.addClass( "square_"+player_id+"_"+coords[0]+"_"+coords[1], "ctc_square_selected" );
+                    }
                 }
             }
 
@@ -414,10 +417,15 @@ function (dojo, declare) {
 
                 // Choose dice for location
                 case 'playerTurnDrawingPhase1':
+                    // console.log("--- Entering playerTurnDrawingPhase1");
                     this.updatePlayerSecondDice( args.args );
+                    // console.log( args.args );
 
-                    var player_id = this.getActivePlayerId();
-                    if( this.isCurrentPlayerActive() ) {
+                    // var player_id = this.getActivePlayerId();
+                    // if( this.isCurrentPlayerActive() ) {
+
+                    var player_id = this.player_id;
+                    if ( !this.isSpectator ) {
                         for (let i=0; i<2; i++) {
                             let elmt_id = 'dice_player_'+player_id+'_'+i;
                             let elmt = $(elmt_id);
@@ -438,7 +446,7 @@ function (dojo, declare) {
 
                         let possibleLocations = args.args.possibleLocations;
 
-                        let player_id = this.getActivePlayerId();
+                        let player_id = this.player_id;;
 
                         for (var id in possibleLocations[player_id]) {
                             let x = possibleLocations[player_id][id].x;
@@ -535,7 +543,7 @@ function (dojo, declare) {
                 break;
 
             case 'playerTurnDrawingPhase1':
-                var player_id = this.getActivePlayerId();
+                var player_id = this.player_id;
                 for (let i=0; i<2; i++) {
                     let elmt_id = 'dice_player_'+player_id+'_'+i;
                     let elmt = $(elmt_id);
@@ -548,7 +556,7 @@ function (dojo, declare) {
                 break;
 
             case 'playerTurnDrawingPhase2':
-                var player_id = this.getActivePlayerId();
+                var player_id = this.player_id;
                 for (let i=0; i<5; i++) {
                     for (let j=0; j<6; j++) {
                         var elmt = dojo.byId('square_'+player_id+'_'+i+'_'+j);
@@ -567,7 +575,7 @@ function (dojo, declare) {
                 dojo.forEach(this.connections, dojo.disconnect);
                 this.connections = [];
 
-                var player_id = this.getActivePlayerId();
+                var player_id = this.player_id;
                 for (let i=1; i<=6; i++) {
                     dojo.removeClass('shape_selection_'+player_id+'_'+i, 'ctc_shape_selectionnable');
                 }
@@ -578,15 +586,15 @@ function (dojo, declare) {
                 dojo.forEach(this.connections, dojo.disconnect);
                 this.connections = [];
 
-                playersBasicInfos = this.gamedatas.gamestate.args.playersBasicInfos;
-                for ( var player_id in playersBasicInfos ) {
-                    for (var i=1; i<=6; i++) {
-                        // let shape_elmt_id = 'shape_selection_'+player_id+'_'+i;
-                        // dojo.removeClass(shape_elmt_id, 'ctc_shape_selectionnable');
-                        let cat_elmt_id = 'cat_selection_'+player_id+'_'+i;
-                        dojo.removeClass(cat_elmt_id, 'ctc_cat_selectionnable');
-                    }
-                }
+                // playersBasicInfos = this.gamedatas.gamestate.args.playersBasicInfos;
+                // for ( var player_id in playersBasicInfos ) {
+                //     for (var i=1; i<=6; i++) {
+                //         // let shape_elmt_id = 'shape_selection_'+player_id+'_'+i;
+                //         // dojo.removeClass(shape_elmt_id, 'ctc_shape_selectionnable');
+                //         let cat_elmt_id = 'cat_selection_'+player_id+'_'+i;
+                //         dojo.removeClass(cat_elmt_id, 'ctc_cat_selectionnable');
+                //     }
+                // }
 
                 break;
 
@@ -670,7 +678,7 @@ function (dojo, declare) {
         },
 
         onClickPlayerDice: function( elmt_id ) {
-            // console.log( '$$$$ Event : onClickPlayerDice' );
+            console.log( '$$$$ Event : onClickPlayerDice' );
             // dojo.stopEvent( evt );
 
             if( ! this.checkAction( 'chooseDiceForLocation' ) )
@@ -683,7 +691,9 @@ function (dojo, declare) {
             var num_player_dice = elmt_id.split('_')[3];
             var dice_face = this.getDiceFace( node, 'ctc_dice' );
 
-            if ( this.getActivePlayerId() != player_id) {
+            console.log(this.player_id + " +++++ " + player_id);
+
+            if ( this.player_id != player_id) {
                 return;
             }
 
@@ -967,7 +977,7 @@ function (dojo, declare) {
                 var dice = args.dices[id];
 
                 if (dice.player_id === null) {
-                    console.log( "face : " + dice.dice_value );
+                    // console.log( "face : " + dice.dice_value );
                     dojo.place( this.format_block('jstpl_dice', {
                         dice_face:dice.dice_value,
                         id:dice.id,
@@ -1013,17 +1023,22 @@ function (dojo, declare) {
             // console.log( '$$$$ : updatePlayerBoardForLocationChoice' );
             // console.log( args );
 
-            var player_id = args.player_id; 
+            // console.log( 'player_id : ' + player_id );
+            // var player_id = args.player_id; 
 
-            for (var id in args.possibleLocations[player_id]) {
-                // console.log( args.possibleLocations[player_id][id] );
-
-                let x = args.possibleLocations[player_id][id].x;
-                let y = args.possibleLocations[player_id][id].y;
-
-                dojo.addClass($('square_'+player_id+'_'+x+'_'+y), 'ctc_square_selectionnable');
+            var player_id = this.player_id;
+            
+            if ( !this.isSpectator ) {
+                for (var id in args.possibleLocations[player_id]) {
+                    // console.log( args.possibleLocations[player_id][id] );
+    
+                    let x = args.possibleLocations[player_id][id].x;
+                    let y = args.possibleLocations[player_id][id].y;
+    
+                    dojo.addClass($('square_'+player_id+'_'+x+'_'+y), 'ctc_square_selectionnable');
+                }
             }
-
+            
             // console.log( '$$$$ : End updatePlayerBoardForLocationChoice' );
         },
 
@@ -1050,7 +1065,7 @@ function (dojo, declare) {
             player_id = args.player_id;
 
             for ( var id in args.score_cat ) {
-                console.log( args.score_cat );
+                // console.log( args.score_cat );
                 if ( args.score_cat[id] == null ) {
                     dojo.addClass( 'cat_selection_' + player_id + '_'+ (parseInt(id) + 1), 'ctc_cat_selectionnable');
                 }
@@ -1420,6 +1435,15 @@ function (dojo, declare) {
             this.updateFootprintsState( notif.args.player_id, notif.args.footprint_used, notif.args.footprint_available );
             this.updateFootprintsCounters( notif.args.player_id, notif.args.footprint_used, notif.args.footprint_available );
 
+            if (notif.args.player_id == this.player_id) {
+                for (var i=0; i<2; i++) {
+                    dojo.removeClass('dice_player_' + notif.args.player_id + '_' + i, "ctc_dice_player_clickable");
+                }
+
+                dojo.forEach(this.connections, dojo.disconnect);
+                this.connections = [];
+            }
+
             // console.log( '**** Notification : passed Ended' );
         },
 
@@ -1485,6 +1509,15 @@ function (dojo, declare) {
             dojo.connect(animation_id, 'onEnd', dojo.hitch(this, 'remove_temp_shape', parameters));
             animation_id.play();
 
+            if ( notif.args.player_id == this.player_id ) {
+                for (let i=1; i<=6; i++) {
+                    dojo.removeClass('shape_selection_' + notif.args.player_id + '_' + i, 'ctc_shape_selectionnable');
+                }
+
+                dojo.forEach(this.connections, dojo.disconnect);
+                this.connections = [];
+            }
+
             // console.log( '**** Notification : shapeChosen Ended' );
         },
 
@@ -1500,8 +1533,13 @@ function (dojo, declare) {
 
             this.updateScoreCat( player_id, cat, score_cat );
 
-            for (let i=1; i<=6; i++) {
-                dojo.removeClass('cat_selection_'+player_id+'_'+i, 'ctc_cat_selectionnable');
+            if ( notif.args.player_id == this.player_id ) {
+                for (let i=1; i<=6; i++) {
+                    dojo.removeClass('cat_selection_'+player_id+'_'+i, 'ctc_cat_selectionnable');
+                }
+
+                dojo.forEach(this.connections, dojo.disconnect);
+                this.connections = [];
             }
 
             // console.log( '**** Notification : catChosen Ended' );
@@ -1607,8 +1645,10 @@ function (dojo, declare) {
 
         notif_backToTurnDrawingPhase1: function( notif ) {
             // console.log( '**** Notification : backToTurnDrawingPhase1' );
-
+            
             let player_id = notif.args.player_id;
+
+            // console.log( 'player_id : ' + player_id );
 
             for (var i=0; i<2; i++) {
                 let elmt_id = 'dice_player_'+player_id+'_'+i;
@@ -1634,11 +1674,21 @@ function (dojo, declare) {
                 dojo.addClass(elmt_id, 'ctc_square_0');
             }
 
-            for (var i=1; i<=6; i++) {
+            for (let i=1; i<=6; i++) {
                 let shape_elmt_id = 'shape_selection_'+player_id+'_'+i;
                 dojo.removeClass(shape_elmt_id, 'ctc_shape_selectionnable');
                 let cat_elmt_id = 'cat_selection_'+player_id+'_'+i;
                 dojo.removeClass(cat_elmt_id, 'ctc_cat_selectionnable');
+            }
+
+            for (let i=0; i<=4; i++) {
+                for (let j=0; j<=5; j++) {
+                    let elmt = $( 'square_'+player_id+'_'+i+'_'+j );
+
+                    if ( elmt != null ) {
+                        dojo.removeClass(elmt, 'ctc_square_selectionnable');
+                    }
+                }
             }
 
             // Remove dice selected for location class
@@ -1649,6 +1699,6 @@ function (dojo, declare) {
             this.updateFootprintsCounters( notif.args.player_id, notif.args.footprint_used, notif.args.footprint_available );
 
             // console.log( '**** Notification : backToTurnDrawingPhase1 Ended' );
-        },
+        }
    });             
 });
