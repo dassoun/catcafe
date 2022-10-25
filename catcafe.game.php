@@ -759,7 +759,7 @@ class catcafe extends Table
         $dice = self::getObjectFromDb( $sql );
 
         if ($dice == null) {
-            throw new BgaUserException( self::_(clienttranslate("This dice is not available any more.")) );
+            throw new BgaUserException( self::_(clienttranslate("This die is not available any more.")) );
         }
 
         // Update dice state
@@ -772,7 +772,7 @@ class catcafe extends Table
         self::DbQuery($sql);
 
         // Notify all players
-        self::notifyAllPlayers( "dicePicked", clienttranslate( '${player_name} picked a dice ${ctc_log_dice}' ), array(
+        self::notifyAllPlayers( "dicePicked", clienttranslate( '${player_name} picked a die ${ctc_log_dice}' ), array(
             'player_id' => $player_id,
             'player_name' => self::getActivePlayerName(),
             'dice_id' => $dice_id,
@@ -797,7 +797,7 @@ class catcafe extends Table
         self::DbQuery($sql);
 
         // Notify all players
-        self::notifyAllPlayers( "drawn", clienttranslate( '${player_name} picked a dice' ), array(
+        self::notifyAllPlayers( "drawn", clienttranslate( '${player_name} picked a die' ), array(
             'player_id' => $player_id,
             'player_name' => self::getCurrentPlayerName(),
             'shape' => $shape,
@@ -861,7 +861,7 @@ class catcafe extends Table
         $res = self::getObjectFromDB( $sql );
         if ($num_player_dice == 0) {
             if (!is_null($res['first_chosen_played_order'])) {
-                throw new BgaUserException( self::_(clienttranslate("This dice has already been played.")) );
+                throw new BgaUserException( self::_(clienttranslate("This die has already been played.")) );
             } else {
                 // Update player dice
                 $sql = "UPDATE player SET first_chosen_played_order = 1 WHERE player_id = '$player_id'";
@@ -869,7 +869,7 @@ class catcafe extends Table
             }
         } else {
             if (!is_null($res['second_chosen_played_order'])) {
-                throw new BgaUserException( self::_(clienttranslate("This dice has already been played.")) );
+                throw new BgaUserException( self::_(clienttranslate("This die has already been played.")) );
             } else {
                 // Update player dice
                 $sql = "UPDATE player SET second_chosen_played_order = 1 WHERE player_id = '$player_id'";
@@ -878,7 +878,7 @@ class catcafe extends Table
         }
 
         // Notify all players
-        self::notifyAllPlayers( "diceForLocationChosen", clienttranslate( '${player_name} has chosen his first dice' ), array(
+        self::notifyAllPlayers( "diceForLocationChosen", clienttranslate( '${player_name} has chosen his first die' ), array(
             'player_id' => $player_id,
             'player_name' => self::getCurrentPlayerName(),
             'first_chosen_dice_num' => $num_player_dice,
