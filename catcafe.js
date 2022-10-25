@@ -417,7 +417,6 @@ function (dojo, declare) {
 
                 // Choose dice for location
                 case 'playerTurnDrawingPhase1':
-                    // console.log("--- Entering playerTurnDrawingPhase1");
                     this.updatePlayerSecondDice( args.args );
                     // console.log( args.args );
 
@@ -988,9 +987,9 @@ function (dojo, declare) {
         },
 
         updatePlayerSecondDice: function( args ) {
-            // console.log( '$$$$ : updatePlayerSecondDice' );
+            console.log( '$$$$ : updatePlayerSecondDice' );
 
-            // console.log(args);
+            console.log(args);
 
             for( var id in args.playersBasicInfos ) {
                 // console.log(id);

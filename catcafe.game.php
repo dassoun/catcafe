@@ -1240,13 +1240,20 @@ class catcafe extends Table
         $sql = "SELECT dice_value FROM dice WHERE player_id is null";
         $dice_2 = self::getObjectFromDb( $sql );
 
+
         // echo "///////////////////////////////////////////////////////////////////";
         // var_dump($player_id);
-        // var_dump($dice_1['dice_value']);
-        // var_dump($dice_2['dice_value']);
 
         $res = array();
-        $res['possibleDrawings'] = self::getPossibleDrawings( $player_id, $dice_1['dice_value'], $dice_2['dice_value'] );
+        $res['possibleDrawings'] = array();
+
+        // if spectator, these values are not set
+        if (isset($dice_1['dice_value']) && $dice_2['dice_value']) {
+            // var_dump($dice_1['dice_value']);
+            // var_dump($dice_2['dice_value']);
+
+            $res['possibleDrawings'] = self::getPossibleDrawings( $player_id, $dice_1['dice_value'], $dice_2['dice_value'] );
+        }
         $res['player_id'] = $player_id;
 
         $playersBasicInfos = $this->loadPlayersBasicInfos();
