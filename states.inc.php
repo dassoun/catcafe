@@ -219,6 +219,7 @@ $machinestates = array(
         "type" => "game",
         "action" => "stStatsCalculation",
         "transitions" => array( "" => 99 )
+        // "transitions" => array( "loopback"=> 100 ) // Debug end game
     ),
 
 /*

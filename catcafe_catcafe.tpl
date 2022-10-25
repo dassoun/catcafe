@@ -77,7 +77,11 @@ var jstpl_player_side_board = '<div class="ctc_psb_board">\
     <div id="used_footprint_${player_id}" class="ctc_psb_footprint ctc_psb_footprint_used"></div><span id="used_footprint_counter_${player_id}">0</span>\
 </div>';
 
-var jstpl_game_log_dice = '<div class="ctc_log_dice ctc_log_dice_${dice_face}"></div>';
+var jstpl_final_scoring='<div class="ctc_final_scoring" id="final_scoring_${player_id}_${id}"></div>';
+
+var jstpl_final_scoring_total='<div class="ctc_final_scoring_total" id="final_scoring_total_${player_id}"></div>';
+
+var jstpl_game_log_dice='<div class="ctc_log_dice ctc_log_dice_${dice_face}"></div>';
 
 </script>  
 

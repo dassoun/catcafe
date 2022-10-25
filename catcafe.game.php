@@ -1704,8 +1704,11 @@ class catcafe extends Table
         $sql = "SELECT DISTINCT player_id FROM drawing ORDER BY player_id ASC";
         $players = self::getCollectionFromDb( $sql );
 
-        $result = array();
+        // $result = array();
+        $final_score = array();
         foreach ($players as $player_id => $player) {
+            $finalScore[$player_id] = array();
+
             $catHouseScore = $this->getCatHouseScoreTotal($player_id);
             $ballOfYarnScore = $this->getBallOfYarnScore($player_id);
             $butterflyToyScore = $this->getButterflyToyScore($player_id);
@@ -1716,7 +1719,6 @@ class catcafe extends Table
             $columnsScore = $this->getColumnsScore($player_id);
             // $catFootprintsScore = $this->getCatFootprintsScore($player_id);
             $catFootprintsScore = 0;
-
 
             self::setStat( $catHouseScore, "cat_house", $player_id );
             self::setStat( $ballOfYarnScore, "ball_of_yarn", $player_id );
@@ -1730,8 +1732,23 @@ class catcafe extends Table
 
             $totalScore = $catHouseScore + $ballOfYarnScore + $butterflyToyScore + $foodBowlScore + $cushionScore + $mouseToyScore + $columnsScore + $catFootprintsScore;
 
+            $finalScore[$player_id][] = $catHouseScore;
+            $finalScore[$player_id][] = $ballOfYarnScore;
+            $finalScore[$player_id][] = $butterflyToyScore;
+            $finalScore[$player_id][] = $foodBowlScore;
+            $finalScore[$player_id][] = $cushionScore;
+            $finalScore[$player_id][] = $mouseToyScore;
+            $finalScore[$player_id][] = $columnsScore;
+            $finalScore[$player_id][] = $totalScore;
+
             $this->DbQuery("UPDATE player SET player_score='$totalScore' WHERE player_id='$player_id'");
         }
+
+        // Notify all players
+        self::notifyAllPlayers( "displayFinalScore", "", array(
+            'finalScore' => $finalScore
+            )
+        );
 
         $this->gamestate->nextState("");
     }

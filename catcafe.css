@@ -245,6 +245,30 @@
     line-height: 22px;
 }
 
+.ctc_final_scoring {
+    position: relative;
+    height: 21px;
+    width: 24px;
+    border: 1px dashed transparent;
+    border-radius: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    line-height: 22px;
+}
+
+.ctc_final_scoring_total {
+    position: relative;
+    height: 21px;
+    width: 56px;
+    border: 1px dashed transparent;
+    border-radius: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    line-height: 22px;
+}
+
 /* Player side board */
 .ctc_psb_footprint {
     width: 15px;

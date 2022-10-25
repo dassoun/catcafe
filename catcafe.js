@@ -234,6 +234,24 @@ function (dojo, declare) {
                     this.slideToObjectPos( $('sub_scoring_'+player_id+'_'+i), $('ctc_player_board_'+player_id), this.getXPixelCoordinatesSubScoring(i - 1), this.getYPixelCoordinatesSubScoring(i), 10 ).play();
                 }
 
+                // Final scoring
+                for ( let i=0; i<=6; i++ ) {
+                    dojo.place( this.format_block('jstpl_final_scoring', {
+                        player_id:player_id,
+                        id:i,
+                    } ), $ ( 'ctc_player_board_' + player_id) );
+
+                    this.slideToObjectPos( $('final_scoring_'+player_id+'_'+i), $('ctc_player_board_'+player_id), this.getXPixelCoordinatesFinalScoring(i), this.getYPixelCoordinatesFinalScoring(i), 10 ).play();
+                }
+
+                // Final scoring total
+                dojo.place( this.format_block('jstpl_final_scoring_total', {
+                    player_id:player_id,
+                } ), $ ( 'ctc_player_board_' + player_id) );
+
+                this.slideToObjectPos( $('final_scoring_total_'+player_id), $('ctc_player_board_'+player_id), this.gameConstants['FINAL_SCORING_TOTAL_X_ORIGIN'], this.gameConstants['FINAL_SCORING_TOTAL_Y_ORIGIN'], 10 ).play();
+                
+
                 // // Columns scoring
                 // for ( let i=1; i<=5; i++ ) {
                 //     // alert(i + " : " + player["score_col_"+i]);
@@ -677,7 +695,7 @@ function (dojo, declare) {
         },
 
         onClickPlayerDice: function( elmt_id ) {
-            console.log( '$$$$ Event : onClickPlayerDice' );
+            // console.log( '$$$$ Event : onClickPlayerDice' );
             // dojo.stopEvent( evt );
 
             if( ! this.checkAction( 'chooseDiceForLocation' ) )
@@ -690,7 +708,7 @@ function (dojo, declare) {
             var num_player_dice = elmt_id.split('_')[3];
             var dice_face = this.getDiceFace( node, 'ctc_dice' );
 
-            console.log(this.player_id + " +++++ " + player_id);
+            // console.log(this.player_id + " +++++ " + player_id);
 
             if ( this.player_id != player_id) {
                 return;
@@ -904,6 +922,18 @@ function (dojo, declare) {
             return this.gameConstants['SUB_SCORING_Y_ORIGIN'];
         },
 
+        getXPixelCoordinatesFinalScoring: function( i )
+        {
+            let offset = this.gameConstants['FINAL_SCORING_X_OFFSET'];
+
+            return this.gameConstants['FINAL_SCORING_X_ORIGIN'] + (i * (offset + this.gameConstants['FINAL_SCORING_WIDTH']));
+        },
+
+        getYPixelCoordinatesFinalScoring: function( i )
+        {
+            return this.gameConstants['FINAL_SCORING_Y_ORIGIN'];
+        },
+
         desableConnections: function()
         {
             // console.log( 'dekonnexx');
@@ -987,9 +1017,9 @@ function (dojo, declare) {
         },
 
         updatePlayerSecondDice: function( args ) {
-            console.log( '$$$$ : updatePlayerSecondDice' );
+            // console.log( '$$$$ : updatePlayerSecondDice' );
 
-            console.log(args);
+            // console.log(args);
 
             for( var id in args.playersBasicInfos ) {
                 // console.log(id);
@@ -1379,6 +1409,7 @@ function (dojo, declare) {
             dojo.subscribe( 'columnSubScoringErased', this, "notif_columnSubScoringErased" );
             dojo.subscribe( 'score', this, "notif_score" );
             dojo.subscribe( 'backToTurnDrawingPhase1', this, "notif_backToTurnDrawingPhase1" );
+            dojo.subscribe( 'displayFinalScore', this, "notif_displayFinalScore" );
         },  
         
         // TODO: from this point and below, you can write your game notifications handling methods
@@ -1698,6 +1729,27 @@ function (dojo, declare) {
             this.updateFootprintsCounters( notif.args.player_id, notif.args.footprint_used, notif.args.footprint_available );
 
             // console.log( '**** Notification : backToTurnDrawingPhase1 Ended' );
-        }
+        },
+
+        notif_displayFinalScore: function( notif ) {
+            // console.log(notif);
+
+            let score = notif.args.finalScore;
+            // console.log( score.id_2365772 );
+
+            for (var player_score in score) {
+                // console.log(score[player_score]);
+                for (let i=0; i<score[player_score].length - 1; i++) {
+                    // var tmp = 'final_scoring_'+player_score+'_'+i;
+                    // console.log(tmp);
+
+                    $('final_scoring_'+player_score+'_'+i).innerHTML = score[player_score][i];
+                }
+
+                // console.log('final_scoring_total_'+player_score);
+                $('final_scoring_total_'+player_score).innerHTML = score[player_score][7];
+            }
+
+        },
    });             
 });
