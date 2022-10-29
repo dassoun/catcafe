@@ -97,7 +97,7 @@ function (dojo, declare) {
                     player:player_id,
                 } ), $ ( 'ctc_player_board_' + player_id) );
 
-                this.slideToObjectPos( $('player_name_'+player_id), $('ctc_player_board_'+player_id), 230, 5, 10 ).play();
+                this.slideToObjectPos( $('player_name_'+player_id), $('ctc_player_board_'+player_id), 269, 5, 10 ).play();
                 $('player_name_'+player_id).innerHTML = gamedatas.players[player_id].name
                 dojo.style( 'player_name_'+player_id, 'color', '#'+gamedatas.players[player_id].color );
 
