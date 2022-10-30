@@ -18,7 +18,8 @@
 define([
     "dojo","dojo/_base/declare", "dojo/query", "dojo/aspect", "dojo/dom", "dojo/_base/connect",
     "ebg/core/gamegui",
-    "ebg/counter"
+    "ebg/counter", 
+    g_gamethemeurl + "./modules/CTCTooltips.js"
 ],
 function (dojo, declare) {
     return declare("bgagame.catcafe", ebg.core.gamegui, {
@@ -175,6 +176,8 @@ function (dojo, declare) {
                     } ), $ ( 'ctc_player_board_' + player_id) );
 
                     this.slideToObjectPos( $('shape_selection_'+player_id+'_'+i), $('ctc_player_board_'+player_id), this.getXPixelCoordinatesShapeSelection(i), this.gameConstants['SHAPE_SELECTION_Y_ORIGIN'], 10 ).play();
+
+                    this.addTooltip( 'shape_selection_'+player_id+'_'+i, tooltip_shape[i-1], '' );
                 }
 
                 // Cat footprints
