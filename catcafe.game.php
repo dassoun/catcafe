@@ -22,6 +22,7 @@ require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 require_once( "modules/CTCCoord.php" );
 require_once( "modules/CTCPossibleDrawing.php" );
 require_once( "modules/CTCSquare.php" );
+require_once( "modules/CTCPossibleCoord.php" );
 
 class catcafe extends Table
 {
@@ -322,7 +323,8 @@ class catcafe extends Table
             for ($j=$min_line - 1; $j<$max_line; $j++) {
                 if (isset($board[$i][$j])) {
                     if ($board[$i][$j] == 0) {
-                        $result[$player_id][] = new CTCCoord($i, $j);
+                        $cost = abs($dice - ($j+1));
+                        $result[$player_id][] = new CTCPossibleCoord($i, $j, $cost);
                     }
                 }
             }
@@ -1279,9 +1281,10 @@ class catcafe extends Table
 
         $player_id = self::getCurrentPlayerId();
 
-        $sql = "SELECT footprint_available, first_chosen_dice_num, first_chosen_dice_val, first_chosen_played_order, second_chosen_dice_num, second_chosen_dice_val, second_chosen_played_order FROM player WHERE player_id = '$player_id'";
+        $sql = "SELECT footprint_used, footprint_available, first_chosen_dice_num, first_chosen_dice_val, first_chosen_played_order, second_chosen_dice_num, second_chosen_dice_val, second_chosen_played_order FROM player WHERE player_id = '$player_id'";
         $res = self::getObjectFromDb( $sql );
 
+        $footprint_used = $res['footprint_used'];
         $footprint_available = $res['footprint_available'];
         $first_chosen_dice_num = $res['first_chosen_dice_num'];
         $first_chosen_dice_val = $res['first_chosen_dice_val'];
@@ -1312,6 +1315,8 @@ class catcafe extends Table
         $diceCommon = self::getObjectFromDb( $sql );
         $res['diceCommon'] = $diceCommon;
 
+        $res['footprint_used'] = $footprint_used;
+
         // var_dump($res);
 
         return $res;
@@ -1321,11 +1326,12 @@ class catcafe extends Table
     {
         $player_id = self::getCurrentPlayerId();
 
-        $sql = "SELECT footprint_available, first_chosen_dice_num, first_chosen_dice_val, first_chosen_played_order, second_chosen_dice_num, second_chosen_dice_val, second_chosen_played_order FROM player WHERE player_id = '$player_id'";
+        $sql = "SELECT footprint_used, footprint_available, first_chosen_dice_num, first_chosen_dice_val, first_chosen_played_order, second_chosen_dice_num, second_chosen_dice_val, second_chosen_played_order FROM player WHERE player_id = '$player_id'";
         $res = self::getObjectFromDb( $sql );
 
         // self::dump('res', $res);
 
+        $footprint_used = $res['footprint_used'];
         $footprint_available = $res['footprint_available'];
         $first_chosen_dice_num = $res['first_chosen_dice_num'];
         $first_chosen_dice_val = $res['first_chosen_dice_val'];
@@ -1349,6 +1355,8 @@ class catcafe extends Table
         $res['player_id'] = $player_id;
         $res['min_shape'] = $min_shape;
         $res['max_shape'] = $max_shape;
+        $res['footprint_used'] = $footprint_used;
+        $res['dice'] = $remaining_dice_val;
 
         // self::dump('res', $res);
 

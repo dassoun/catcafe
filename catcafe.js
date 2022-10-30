@@ -462,17 +462,34 @@ function (dojo, declare) {
                     if( this.isCurrentPlayerActive() ) {
 
                         let possibleLocations = args.args.possibleLocations;
+                        let footprint_used = args.args.footprint_used;
 
-                        let player_id = this.player_id;;
+                        let player_id = this.player_id;
 
                         for (var id in possibleLocations[player_id]) {
                             let x = possibleLocations[player_id][id].x;
                             let y = possibleLocations[player_id][id].y;
+                            let cost = possibleLocations[player_id][id].cost;
 
                             let elmt = $('square_'+player_id+'_'+x+'_'+y);
 
                             this.connections.push( dojo.connect( elmt , 'click', () => this.onClickSquare('square_'+player_id+'_'+x+'_'+y) ) );
+
+                            this.connections.push( dojo.connect( elmt , 'onmouseenter', () => this.updatePrevisionnalCostEnter(player_id, footprint_used, cost) ) );
+                            this.connections.push( dojo.connect( elmt , 'onmouseleave', () => this.updatePrevisionnalCostLeave(player_id, footprint_used, cost) ) );
                         }
+
+                        // // this.connections.push( dojo.connect( elmt , 'on', () => this.onClickSquare('square_'+player_id+'_'+x+'_'+y) ) );
+                        // for (var i=0; i<=5; i++) {
+                        //     var nl = dojo.query('.cost_'+i);
+
+                        //     for (var j=0; j<nl.length; j++) {
+                        //         this.connections.push( dojo.connect( elmt , 'onmouseenter', () => this.onEnterPossiblePosition(cost) ) );
+                        //     }
+                        // }
+                        // var nl = dojo.query(".cost_1");
+                        // console.log(nl);
+
                     }
                     break;
 
@@ -485,6 +502,8 @@ function (dojo, declare) {
                     player_id = args.args.player_id; 
                     let min_shape = args.args.min_shape;
                     let max_shape = args.args.max_shape;
+                    let footprint_used = args.args.footprint_used;
+                    let dice_value = args.args.dice;
 
                     for (var i=min_shape; i<=max_shape; i++) {
                         let elmt_id = 'shape_selection_'+player_id+'_'+i;
@@ -492,6 +511,10 @@ function (dojo, declare) {
 
                         // console.log('------> elmt_id : ' + elmt_id);
                         this.connections.push( dojo.connect( elmt , 'click', () => this.onClickShape(elmt_id) ) );
+
+                        let cost = Math.abs(i - parseInt(dice_value));
+                        this.connections.push( dojo.connect( elmt , 'onmouseenter', () => this.updatePrevisionnalCostEnter(player_id, footprint_used, cost) ) );
+                        this.connections.push( dojo.connect( elmt , 'onmouseleave', () => this.updatePrevisionnalCostLeave(player_id, footprint_used, cost) ) );
                     }
 
                     break;
@@ -1063,8 +1086,11 @@ function (dojo, declare) {
     
                     let x = args.possibleLocations[player_id][id].x;
                     let y = args.possibleLocations[player_id][id].y;
+                    let cost = args.possibleLocations[player_id][id].cost;
     
                     dojo.addClass($('square_'+player_id+'_'+x+'_'+y), 'ctc_square_selectionnable');
+
+                    dojo.addClass($('square_'+player_id+'_'+x+'_'+y), 'cost_'+cost);
                 }
             }
             
@@ -1179,7 +1205,27 @@ function (dojo, declare) {
             dojo.destroy( elmt_id );
 
             // console.log('$$$$ : remove_temp_shape Ended');
-         },
+        },
+
+        updatePrevisionnalCostEnter: function( player_id, footprint_used, cost ) {
+            for (var i=1; i<=cost; i++) {
+                elmt = 'cat_footprint_'+player_id+'_'+(parseInt(footprint_used, 10) + i - 1);
+                if (elmt) {
+                    dojo.addClass(elmt, 'ctc_cat_footprint_3');
+                    dojo.removeClass(elmt, 'ctc_cat_footprint_1');
+                }
+            }
+        },
+
+        updatePrevisionnalCostLeave: function( player_id, footprint_used, cost ) {
+            for (var i=1; i<=cost; i++) {
+                elmt = 'cat_footprint_'+player_id+'_'+(parseInt(footprint_used, 10) + i - 1);
+                if (elmt) {
+                    dojo.addClass(elmt, 'ctc_cat_footprint_1');
+                    dojo.removeClass(elmt, 'ctc_cat_footprint_3');
+                }
+            }
+        },
 
 
         /* @Override */
