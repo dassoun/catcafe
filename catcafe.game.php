@@ -1167,6 +1167,9 @@ class catcafe extends Table
             self::DbQuery($sql);
         }
 
+        $sql = "SELECT score_cat_1, score_cat_2, score_cat_3, score_cat_4, score_cat_5, score_cat_6 FROM player WHERE player_id = '$player_id'";
+        $scores_cat_info = self::getObjectFromDB( $sql );
+
         // Notify all players
         self::notifyAllPlayers( "catChosen", clienttranslate( '${player_name} has chosen his cat' ), array(
             'player_id' => $player_id,
@@ -1174,7 +1177,8 @@ class catcafe extends Table
             'x' => $x,
             'y' => $y,
             'cat' => $cat,
-            'score_cat' => $score_cat
+            'score_cat' => $score_cat,
+            'scores_cat_info' => $scores_cat_info
             )
         );
 
@@ -1326,6 +1330,7 @@ class catcafe extends Table
     {
         $player_id = self::getCurrentPlayerId();
 
+        $res = array();
         $sql = "SELECT footprint_used, footprint_available, first_chosen_dice_num, first_chosen_dice_val, first_chosen_played_order, second_chosen_dice_num, second_chosen_dice_val, second_chosen_played_order FROM player WHERE player_id = '$player_id'";
         $res = self::getObjectFromDb( $sql );
 
@@ -1340,7 +1345,6 @@ class catcafe extends Table
         $second_chosen_dice_val = $res['second_chosen_dice_val'];
         $second_chosen_played_order = $res['second_chosen_played_order'];
 
-        $res = array();
         $remaining_dice_val = 0;
 
         if (is_null($first_chosen_played_order)) {
@@ -1352,12 +1356,13 @@ class catcafe extends Table
         $min_shape = max(1, $remaining_dice_val - $footprint_available);
         $max_shape = min(6, $remaining_dice_val + $footprint_available);
 
+        $res = array();
         $res['player_id'] = $player_id;
         $res['min_shape'] = $min_shape;
         $res['max_shape'] = $max_shape;
         $res['footprint_used'] = $footprint_used;
         $res['dice'] = $remaining_dice_val;
-
+        
         // self::dump('res', $res);
 
         return $res;
@@ -1409,6 +1414,24 @@ class catcafe extends Table
             $res['score_cat'][] = $score_cat['score_cat_'.$i];
         }
         $res['player_id'] = $player_id;
+
+        $cat_scoring = array();
+        $sql = "SELECT 
+                    d.state AS id, COUNT(*) AS nb, p.score_cat_1, p.score_cat_2, p.score_cat_3, p.score_cat_4, p.score_cat_5, p.score_cat_6 
+                FROM 
+                    drawing d 
+                    JOIN player p ON d.player_id = p.player_id 
+                WHERE 
+                    d.player_id = $player_id AND d.state > 0 
+                GROUP BY 
+                    d.state, p.score_cat_1, p.score_cat_2, p.score_cat_3, p.score_cat_4, p.score_cat_5, p.score_cat_6 
+                ORDER BY 
+                    d.state";
+        $cat_scoring = self::getCollectionFromDB( $sql );
+
+        $possible_sub_scoring = $cat_scoring;
+
+        $res['possible_sub_scoring'] = $possible_sub_scoring;
 
         return $res;
     }

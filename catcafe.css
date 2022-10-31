@@ -272,6 +272,20 @@
     border: 1px dashed black;
 }
 
+.ctc_txt_flash  {
+    color: #007f37;
+    animation-duration: 1.2s;
+    animation-name: flash;
+    animation-iteration-count: infinite;
+    transition: none;
+ }
+
+ @keyframes flash {
+   0%   { opacity:1; }
+   40%   {opacity:0; }
+   100% { opacity:1; }
+ }
+
 .ctc_sub_scoring {
     font-family: 'Caveat', cursive;
     font-size: 22px;

@@ -1121,14 +1121,28 @@ function (dojo, declare) {
             // console.log( args.score_cat );
 
             player_id = args.player_id;
+            possible_sub_scoring = args.possible_sub_scoring;
 
             for ( var id in args.score_cat ) {
                 // console.log( args.score_cat );
                 if ( args.score_cat[id] == null ) {
                     dojo.addClass( 'cat_selection_' + player_id + '_'+ (parseInt(id) + 1), 'ctc_cat_selectionnable');
+                    
+                    elmt = 'sub_scoring_' + player_id + '_'+ (parseInt(id) + 1);
+                    dojo.addClass(elmt, 'ctc_txt_flash');
+
+                    if (typeof possible_sub_scoring[parseInt(id, 10) + 1] !== 'undefined') {
+
+                        if (possible_sub_scoring[parseInt(id, 10) + 1]['score_cat_' + parseInt(id, 10) + 1] == null) {
+                            let possible_score = possible_sub_scoring[parseInt(id, 10) + 1]['nb'] * 2;
+                            dojo.byId(elmt).innerHTML = possible_score;
+                        }
+                    } else {
+                        dojo.byId(elmt).innerHTML = 0;
+                    }
                 }
             }
-
+            
             // console.log( '$$$$ : updatePlayerBoardForCatSelection Ended' );
         },
 
@@ -1609,12 +1623,21 @@ function (dojo, declare) {
             let y = notif.args.y;
             let cat = notif.args.cat;
             let score_cat = notif.args.score_cat;
+            let scores_cat_info = notif.args.scores_cat_info;
 
             this.updateScoreCat( player_id, cat, score_cat );
 
             if ( notif.args.player_id == this.player_id ) {
                 for (let i=1; i<=6; i++) {
                     dojo.removeClass('cat_selection_'+player_id+'_'+i, 'ctc_cat_selectionnable');
+
+                    // Potential scores for cat with cat houses
+                    elmt = 'sub_scoring_' + player_id + '_'+ i;
+                    dojo.removeClass(elmt, 'ctc_txt_flash');
+
+                    if (scores_cat_info['score_cat_' + i] == null) {
+                        dojo.byId(elmt).innerHTML = "";
+                    }
                 }
 
                 dojo.forEach(this.connections, dojo.disconnect);
