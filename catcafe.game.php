@@ -1233,6 +1233,25 @@ class catcafe extends Table
         return $res;
     }
 
+    function argSetupDrawing() {
+        $player_id = self::getCurrentPlayerId();
+        
+        $playersBasicInfos = $this->loadPlayersBasicInfos();
+        $res['playersBasicInfos'] = $playersBasicInfos;
+
+        $sql = "SELECT id, dice_value FROM dice WHERE player_id = '$player_id'";
+        $dicePlayer = self::getObjectFromDb( $sql );
+        $res['dicePlayer'] = $dicePlayer;
+
+        $sql = "SELECT id, dice_value FROM dice WHERE player_id IS NULL";
+        $diceCommon = self::getObjectFromDb( $sql );
+        $res['diceCommon'] = $diceCommon;
+        
+        // var_dump($res);
+
+        return $res;
+    }
+
     // Select a dice for position
     function argPlayerTurnDrawingPhase1() 
     {

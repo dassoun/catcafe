@@ -433,12 +433,15 @@ function (dojo, declare) {
                     break;
 
                 case 'setupDrawing':
-                    
+                    // Update 2nd dice on board
+                    // No more done in playerTurnDrawingPhase1 
+                    // because spectator don't enter in private states
+                    this.updatePlayerSecondDice( args.args );
                     break;
 
                 // Choose dice for location
                 case 'playerTurnDrawingPhase1':
-                    this.updatePlayerSecondDice( args.args );
+                    //this.updatePlayerSecondDice( args.args );
                     // console.log( args.args );
 
                     // var player_id = this.getActivePlayerId();

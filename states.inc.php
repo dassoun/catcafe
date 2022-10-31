@@ -101,6 +101,7 @@ $machinestates = array(
         "name" => "setupDrawing",
         "description" => '',
         "type" => "game",
+        "args" => "argSetupDrawing",
         "action" => "stSetupDrawing",
         "transitions" => array( "" => 60 )
     ),
