@@ -1786,6 +1786,23 @@ function (dojo, declare) {
                 dojo.removeClass(cat_elmt_id, 'ctc_cat_selectionnable');
             }
 
+            //Remove cat scoring displayed if cat house chosen
+            let scores_cat_info = notif.args.scores_cat_info;
+
+            if (typeof scores_cat_info !== 'undefined') {
+                for (let i=1; i<=6; i++) {
+                    dojo.removeClass('cat_selection_'+player_id+'_'+i, 'ctc_cat_selectionnable');
+
+                    // Potential scores for cat with cat houses
+                    elmt = 'sub_scoring_' + player_id + '_'+ i;
+                    dojo.removeClass(elmt, 'ctc_txt_flash');
+
+                    if (scores_cat_info['score_cat_' + i] == null) {
+                        dojo.byId(elmt).innerHTML = "";
+                    }
+                }
+            }
+
             for (let i=0; i<=4; i++) {
                 for (let j=0; j<=5; j++) {
                     let elmt = $( 'square_'+player_id+'_'+i+'_'+j );

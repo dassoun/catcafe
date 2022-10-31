@@ -993,6 +993,9 @@ class catcafe extends Table
         $footprint_available = $res['footprint_available'];
         $footprint_used = $res['footprint_used'];
 
+        $sql = "SELECT score_cat_1, score_cat_2, score_cat_3, score_cat_4, score_cat_5, score_cat_6 FROM player WHERE player_id = '$player_id'";
+        $scores_cat_info = self::getObjectFromDB( $sql );
+
         // Notify all players
         self::notifyAllPlayers( "backToTurnDrawingPhase1", clienttranslate( '${player_name} has cancelled his action' ), array(
             'player_id' => $player_id,
@@ -1000,7 +1003,8 @@ class catcafe extends Table
             'x' => $locations[0],
             'y' => $locations[1],
             'footprint_available' => $footprint_available,
-            'footprint_used' => $footprint_used
+            'footprint_used' => $footprint_used,
+            'scores_cat_info' => $scores_cat_info
             )
         );
         
@@ -1235,7 +1239,7 @@ class catcafe extends Table
 
     function argSetupDrawing() {
         $player_id = self::getCurrentPlayerId();
-        
+
         $playersBasicInfos = $this->loadPlayersBasicInfos();
         $res['playersBasicInfos'] = $playersBasicInfos;
 
