@@ -7,7 +7,7 @@ const tooltip_shape = [
     "player doesn’t have the most but still has at least one Ball of Yarn, they score 3 points for that Cat Tower. If Players tie for the most Balls of Yarn in a "+
     "Cat Tower, each tied player gets 8 points.",
 
-    "BUTTERFLY TOY: After you mark a Butterfly Toy, immediately mark a circle on two unmarked footprints. These footprints are then considered available for " +
+    "BUTTERFLY TOY: A Butterfly Toy gives you two unmarked footprints. These footprints are then considered available for " +
     "you to use in future rounds. At the end of the game, you score 3 points for each Butterfly Toy.",
 
     "FOOD BOWL: At the end of the game, Food bowls score 1 point for each different adjacent item.",

@@ -1755,13 +1755,25 @@ class catcafe extends Table
 
     function stStatsCalculation()
     {
-        $sql = "SELECT DISTINCT player_id FROM drawing ORDER BY player_id ASC";
+        $sql = "SELECT 
+                    player_id, player_name,
+                    (score_cat_1 + score_cat_2 + score_cat_3 + score_cat_4 + score_cat_5 + score_cat_6 + score_col_1 + score_col_2 + score_col_3 + score_col_4 + score_col_5) AS score_total
+                FROM 
+                    player 
+                ORDER BY 
+                score_total DESC";
         $players = self::getCollectionFromDb( $sql );
 
         // $result = array();
         $final_score = array();
+        $table_final_scoring = array();
+
+        $table_final_scoring[] = array(self::_(clienttranslate("Player")), self::_(clienttranslate("Cat house")), self::_(clienttranslate("Ball of yarn")), 
+                                        self::_(clienttranslate("Butterfly toy")), self::_(clienttranslate("Food bowl")), self::_(clienttranslate("Cushion")), 
+                                        self::_(clienttranslate("Mouse toy")), self::_(clienttranslate("Columns")), self::_(clienttranslate("Total")));
+
         foreach ($players as $player_id => $player) {
-            $finalScore[$player_id] = array();
+            $finalScore[$player_id] = array(); 
 
             $catHouseScore = $this->getCatHouseScoreTotal($player_id);
             $ballOfYarnScore = $this->getBallOfYarnScore($player_id);
@@ -1795,7 +1807,16 @@ class catcafe extends Table
             $finalScore[$player_id][] = $columnsScore;
             $finalScore[$player_id][] = $totalScore;
 
+            $table_final_scoring[] = array( $player["player_name"], $catHouseScore, $ballOfYarnScore, $butterflyToyScore, $foodBowlScore, $cushionScore, $mouseToyScore, 
+                                            $columnsScore, $totalScore );
+
             $this->DbQuery("UPDATE player SET player_score='$totalScore' WHERE player_id='$player_id'");
+
+            // Update scores on players' panel
+            $this->notifyAllPlayers( "score", '', array(
+                "player_id" => $player_id,
+                "player_score" => $totalScore
+            ) );
         }
 
         // Notify all players
@@ -1803,6 +1824,13 @@ class catcafe extends Table
             'finalScore' => $finalScore
             )
         );
+
+        $this->notifyAllPlayers( "tableWindow", '', array(
+            "id" => 'finalScoring',
+            "title" => clienttranslate("Final scoring"),
+            "table" => $table_final_scoring,
+            "closing" => clienttranslate( "Close" )
+        ) );
 
         $this->gamestate->nextState("");
     }

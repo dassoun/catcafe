@@ -177,7 +177,7 @@ function (dojo, declare) {
 
                     this.slideToObjectPos( $('shape_selection_'+player_id+'_'+i), $('ctc_player_board_'+player_id), this.getXPixelCoordinatesShapeSelection(i), this.gameConstants['SHAPE_SELECTION_Y_ORIGIN'], 10 ).play();
 
-                    this.addTooltip( 'shape_selection_'+player_id+'_'+i, tooltip_shape[i-1], '' );
+                    this.addTooltip( 'shape_selection_'+player_id+'_'+i, _(tooltip_shape[i-1]), '' );
                 }
 
                 // Cat footprints
