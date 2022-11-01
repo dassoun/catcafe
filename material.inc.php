@@ -96,7 +96,20 @@ $this->gameConstants = array(
 
   "FOOTPRINTS_TOTAL" => 18,
   "FOOTPRINTS_GAINED_PASSING" => 3,
-  "FOOTPRINTS_GAINED_BUTTERFLY" => 2
+  "FOOTPRINTS_GAINED_BUTTERFLY" => 2,
+
+  "TRL_A_CAT_HOUSE" => "a Cat house",
+  "TRL_A_BALL_OF_YARN" => "a Ball of yarn",
+  "TRL_A_BUTTERFLY_TOY" => "a Butterfly toy",
+  "TRL_A_FOOD_BOWL" => "a Food bowl",
+  "TRL_A_CUSHION" => "a Cushion",
+  "TRL_A_MOUSE_TOY" => "a Mouse toy",
+  "TRL_THE_CAT_HOUSE" => "the Cat house",
+  "TRL_THE_BALL_OF_YARN" => "the Ball of yarn",
+  "TRL_THE_BUTTERFLY_TOY" => "the Butterfly toy",
+  "TRL_THE_FOOD_BOWL" => "the Food bowl",
+  "TRL_THE_CUSHION" => "the Cushion",
+  "TRL_THE_MOUSE_TOY" => "the Mouse toy",
 );
 
 

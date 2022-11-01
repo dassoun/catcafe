@@ -799,7 +799,7 @@ class catcafe extends Table
         self::DbQuery($sql);
 
         // Notify all players
-        self::notifyAllPlayers( "drawn", clienttranslate( '${player_name} picked a die' ), array(
+        self::notifyAllPlayers( "drawn", "", array(
             'player_id' => $player_id,
             'player_name' => self::getCurrentPlayerName(),
             'shape' => $shape,
@@ -880,7 +880,7 @@ class catcafe extends Table
         }
 
         // Notify all players
-        self::notifyAllPlayers( "diceForLocationChosen", clienttranslate( '${player_name} has chosen his first die' ), array(
+        self::notifyAllPlayers( "diceForLocationChosen", "", array(
             'player_id' => $player_id,
             'player_name' => self::getCurrentPlayerName(),
             'first_chosen_dice_num' => $num_player_dice,
@@ -908,7 +908,7 @@ class catcafe extends Table
         $footprint_used = $res['footprint_used'];
 
         // Notify all players
-        self::notifyAllPlayers( "backToTurnDrawingPhase1", clienttranslate( '${player_name} has cancelled his action' ), array(
+        self::notifyAllPlayers( "backToTurnDrawingPhase1", "", array(
             'player_id' => $player_id,
             'player_name' => self::getCurrentPlayerName(),
             'x' => -1,
@@ -951,7 +951,7 @@ class catcafe extends Table
         $footprint_used = $res['footprint_used'];
 
         // Notify all players
-        self::notifyAllPlayers( "backToTurnDrawingPhase1", clienttranslate( '${player_name} has cancelled his action' ), array(
+        self::notifyAllPlayers( "backToTurnDrawingPhase1", "", array(
             'player_id' => $player_id,
             'player_name' => self::getCurrentPlayerName(),
             'x' => $locations[0],
@@ -997,7 +997,7 @@ class catcafe extends Table
         $scores_cat_info = self::getObjectFromDB( $sql );
 
         // Notify all players
-        self::notifyAllPlayers( "backToTurnDrawingPhase1", clienttranslate( '${player_name} has cancelled his action' ), array(
+        self::notifyAllPlayers( "backToTurnDrawingPhase1", "", array(
             'player_id' => $player_id,
             'player_name' => self::getCurrentPlayerName(),
             'x' => $locations[0],
@@ -1058,9 +1058,9 @@ class catcafe extends Table
 
 
         // Notify all players
-        self::notifyAllPlayers( "drawingLocationChosen", clienttranslate( '${player_name} has chosen where to draw' ), array(
+        self::notifyAllPlayers( "drawingLocationChosen", "", array(
             'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
+            'player_name' => self::getCurrentPlayerName(),
             'x' => $x,
             'y' => $y,
             'footprint_used' => $player_info['footprint_used'] + $nb_required_footprint, 
@@ -1131,14 +1131,41 @@ class catcafe extends Table
         self::DbQuery($sql);
 
         // Notify all players
-        self::notifyAllPlayers( "shapeChosen", clienttranslate( '${player_name} has chosen his shape' ), array(
+        $shape_name = "a shape";
+        switch ($shape) {
+            case $this->gameConstants["SHAPE_CAT_HOUSE"] :
+                $shape_name = clienttranslate( $this->gameConstants["TRL_A_CAT_HOUSE"] );
+                break;
+            case $this->gameConstants["SHAPE_BALL_OF_YARN"] :
+                $shape_name = clienttranslate( $this->gameConstants["TRL_A_BALL_OF_YARN"] );
+                break;
+            case $this->gameConstants["SHAPE_BUTTERFLY_TOY"] :
+                $shape_name = clienttranslate( $this->gameConstants["TRL_A_BUTTERFLY_TOY"] );
+                break;
+            case $this->gameConstants["SHAPE_FOOD_BOWL"] :
+                $shape_name = clienttranslate( $this->gameConstants["TRL_A_FOOD_BOWL"] );
+                break;
+            case $this->gameConstants["SHAPE_CUSHION"] :
+                $shape_name = clienttranslate( $this->gameConstants["TRL_A_CUSHION"] );
+                break;
+            case $this->gameConstants["SHAPE_MOUSE_TOY"] :
+                $shape_name = clienttranslate( $this->gameConstants["TRL_A_MOUSE_TOY"] );
+                break;
+            default :
+                break;
+        }
+
+        self::notifyAllPlayers( "shapeChosen", clienttranslate( '${player_name} has drawn ${shape_name} on column ${column_number}, floor ${floor_numer}' ), array(
             'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
+            'player_name' => self::getCurrentPlayerName(),
             'x' => $x,
             'y' => $y,
             'footprint_used' => $player_info['footprint_used'] + $required_footprint, 
             'footprint_available' => $player_info['footprint_available'] - $required_footprint + $gained_footprints,
-            'shape' => $shape
+            'shape' => $shape,
+            'shape_name' => $shape_name,
+            'column_number' => $x + 1,
+            'floor_numer' => $y + 1
             )
         );
 
@@ -1175,14 +1202,39 @@ class catcafe extends Table
         $scores_cat_info = self::getObjectFromDB( $sql );
 
         // Notify all players
-        self::notifyAllPlayers( "catChosen", clienttranslate( '${player_name} has chosen his cat' ), array(
+        $shape_name = "the shape";
+        switch ($shape) {
+            case $this->gameConstants["SHAPE_CAT_HOUSE"] :
+                $shape_name = clienttranslate( $this->gameConstants["TRL_THE_CAT_HOUSE"] );
+                break;
+            case $this->gameConstants["SHAPE_BALL_OF_YARN"] :
+                $shape_name = clienttranslate( $this->gameConstants["TRL_THE_BALL_OF_YARN"] );
+                break;
+            case $this->gameConstants["SHAPE_BUTTERFLY_TOY"] :
+                $shape_name = clienttranslate( $this->gameConstants["TRL_THE_BUTTERFLY_TOY"] );
+                break;
+            case $this->gameConstants["SHAPE_FOOD_BOWL"] :
+                $shape_name = clienttranslate( $this->gameConstants["TRL_THE_FOOD_BOWL"] );
+                break;
+            case $this->gameConstants["SHAPE_CUSHION"] :
+                $shape_name = clienttranslate( $this->gameConstants["TRL_THE_CUSHION"] );
+                break;
+            case $this->gameConstants["SHAPE_MOUSE_TOY"] :
+                $shape_name = clienttranslate( $this->gameConstants["TRL_THE_MOUSE_TOY"] );
+                break;
+            default :
+                break;
+        }
+
+        self::notifyAllPlayers( "catChosen", clienttranslate( '${player_name} has chosen chosen the cat with ${shape_name}' ), array(
             'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
+            'player_name' => self::getCurrentPlayerName(),
             'x' => $x,
             'y' => $y,
             'cat' => $cat,
             'score_cat' => $score_cat,
-            'scores_cat_info' => $scores_cat_info
+            'scores_cat_info' => $scores_cat_info,
+            'shape_name' => $shape_name
             )
         );
 
@@ -1825,7 +1877,7 @@ class catcafe extends Table
             )
         );
 
-        $this->notifyAllPlayers( "tableWindow", '', array(
+        $this->notifyAllPlayers( "tableWindow", "", array(
             "id" => 'finalScoring',
             "title" => clienttranslate("Final scoring"),
             "table" => $table_final_scoring,
