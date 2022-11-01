@@ -166,6 +166,7 @@
     background-repeat: no-repeat;
     z-index: 500;
     border: 1px solid transparent;
+    margin-bottom: 12px;
     /* box-sizing: border-box; */
 }
 
