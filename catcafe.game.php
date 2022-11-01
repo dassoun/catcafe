@@ -1822,9 +1822,16 @@ class catcafe extends Table
         $final_score = array();
         $table_final_scoring = array();
 
-        $table_final_scoring[] = array(self::_(clienttranslate("Player")), self::_(clienttranslate("Cat house")), self::_(clienttranslate("Ball of yarn")), 
-                                        self::_(clienttranslate("Butterfly toy")), self::_(clienttranslate("Food bowl")), self::_(clienttranslate("Cushion")), 
-                                        self::_(clienttranslate("Mouse toy")), self::_(clienttranslate("Columns")), self::_(clienttranslate("Total")));
+        $img_cat_house = "<div class=\"ctc_img_final_scoring ctc_img_final_scoring_1\"></div>";
+        $img_ball_of_yarn = "<div class=\"ctc_img_final_scoring ctc_img_final_scoring_2\"></div>";
+        $img_butterfly_toy = "<div class=\"ctc_img_final_scoring ctc_img_final_scoring_3\"></div>";
+        $img_food_bowl = "<div class=\"ctc_img_final_scoring ctc_img_final_scoring_4\"></div>";
+        $img_cushion = "<div class=\"ctc_img_final_scoring ctc_img_final_scoring_5\"></div>";
+        $img_mouse_toy = "<div class=\"ctc_img_final_scoring ctc_img_final_scoring_6\"></div>";
+        $img_column = "<div class=\"ctc_img_final_scoring ctc_img_final_scoring_7\"></div>";
+
+        $table_final_scoring[] = array("", $img_cat_house, $img_ball_of_yarn, $img_butterfly_toy, $img_food_bowl, $img_cushion, $img_mouse_toy,
+                                        $img_column, self::_(clienttranslate("Total")));
 
         foreach ($players as $player_id => $player) {
             $finalScore[$player_id] = array(); 

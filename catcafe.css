@@ -381,6 +381,21 @@
 .ctc_log_shape_5 { background-position: -120px 0px; }
 .ctc_log_shape_6 { background-position: -150px 0px; }
 
+.ctc_img_final_scoring {
+    display:inline-block;
+    height: 34px;
+    width: 45px;
+    background-image: url( 'img/drawings_black_45_34.png' );
+}
+
+.ctc_img_final_scoring_1 { background-position: 0px 0px; }
+.ctc_img_final_scoring_2 { background-position: -45px 0px; }
+.ctc_img_final_scoring_3 { background-position: -90px 0px; }
+.ctc_img_final_scoring_4 { background-position: -135px 0px; }
+.ctc_img_final_scoring_5 { background-position: -180px 0px; }
+.ctc_img_final_scoring_6 { background-position: -225px 0px; }
+.ctc_img_final_scoring_7 { background-position: -270px 0px; }
+
 /*
     Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):
 
