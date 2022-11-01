@@ -1155,7 +1155,7 @@ class catcafe extends Table
                 break;
         }
 
-        self::notifyAllPlayers( "shapeChosen", clienttranslate( '${player_name} has drawn ${shape_name} on column ${column_number}, floor ${floor_numer}' ), array(
+        self::notifyAllPlayers( "shapeChosen", clienttranslate( '${player_name} has drawn ${ctc_log_shape} on column ${column_number}, floor ${floor_numer}' ), array(
             'player_id' => $player_id,
             'player_name' => self::getCurrentPlayerName(),
             'x' => $x,
@@ -1163,6 +1163,7 @@ class catcafe extends Table
             'footprint_used' => $player_info['footprint_used'] + $required_footprint, 
             'footprint_available' => $player_info['footprint_available'] - $required_footprint + $gained_footprints,
             'shape' => $shape,
+            'ctc_log_shape' => $shape,
             'shape_name' => $shape_name,
             'column_number' => $x + 1,
             'floor_numer' => $y + 1
@@ -1203,7 +1204,7 @@ class catcafe extends Table
 
         // Notify all players
         $shape_name = "the shape";
-        switch ($shape) {
+        switch ($cat) {
             case $this->gameConstants["SHAPE_CAT_HOUSE"] :
                 $shape_name = clienttranslate( $this->gameConstants["TRL_THE_CAT_HOUSE"] );
                 break;
@@ -1226,12 +1227,13 @@ class catcafe extends Table
                 break;
         }
 
-        self::notifyAllPlayers( "catChosen", clienttranslate( '${player_name} has chosen chosen the cat with ${shape_name}' ), array(
+        self::notifyAllPlayers( "catChosen", clienttranslate( '${player_name} has chosen the cat with ${ctc_log_shape}' ), array(
             'player_id' => $player_id,
             'player_name' => self::getCurrentPlayerName(),
             'x' => $x,
             'y' => $y,
             'cat' => $cat,
+            'ctc_log_shape' => $cat,
             'score_cat' => $score_cat,
             'scores_cat_info' => $scores_cat_info,
             'shape_name' => $shape_name

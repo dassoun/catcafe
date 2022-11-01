@@ -193,6 +193,7 @@ $machinestates = array(
         "description" => '',
         "type" => "game",
         "action" => "stNextRound",
+        "updateGameProgression" => true,
         "transitions" => array( "goToCleanBoardForNextRound" => 130, "goStatsCalculation" => 150 )
     ),
 

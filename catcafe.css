@@ -366,6 +366,20 @@
 .ctc_log_dice_5 { background-position: -120px 0px; }
 .ctc_log_dice_6 { background-position: -150px 0px; }
 
+.ctc_log_shape {
+    display:inline-block;
+    height: 18px;
+    width: 30px;
+    background-image: url( 'img/drawings_black_30_18.png' );
+}
+
+.ctc_log_shape_1 { background-position: 0px 0px; }
+.ctc_log_shape_2 { background-position: -30px 0px; }
+.ctc_log_shape_3 { background-position: -60px 0px; }
+.ctc_log_shape_4 { background-position: -90px 0px; }
+.ctc_log_shape_5 { background-position: -120px 0px; }
+.ctc_log_shape_6 { background-position: -150px 0px; }
+
 /*
     Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):
 

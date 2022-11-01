@@ -82,6 +82,7 @@ var jstpl_final_scoring='<div class="ctc_final_scoring" id="final_scoring_${play
 var jstpl_final_scoring_total='<div class="ctc_final_scoring_total" id="final_scoring_total_${player_id}"></div>';
 
 var jstpl_game_log_dice='<div class="ctc_log_dice ctc_log_dice_${dice_face}"></div>';
+var jstpl_game_log_shape='<div class="ctc_log_shape ctc_log_shape_${shape}"></div>';
 
 </script>  
 

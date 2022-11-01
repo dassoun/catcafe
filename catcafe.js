@@ -1257,6 +1257,11 @@ function (dojo, declare) {
                         args['ctc_log_dice'] = this.format_block('jstpl_game_log_dice', {
                             dice_face:args['ctc_log_dice']
                         });
+                    }
+                    if ('ctc_log_shape' in args) {
+                        args['ctc_log_shape'] = this.format_block('jstpl_game_log_shape', {
+                            shape:args['ctc_log_shape']
+                        });
                     } 
                 }
             } catch (e) {
