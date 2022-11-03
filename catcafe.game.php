@@ -1950,7 +1950,7 @@ class catcafe extends Table
         if ($state['type'] === "activeplayer") {
             switch ($statename) {
                 case "playerTurnPicking":
-                    $sql = "SELECT id, dice_value FROM dice";
+                    $sql = "SELECT id, dice_value FROM dice WHERE player_id IS NULL";
                     $dices = self::getObjectListFromDB( $sql );
 
                     $nb = count($dices);
