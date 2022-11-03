@@ -750,12 +750,21 @@ class catcafe extends Table
         (note: each method below must match an input method in catcafe.action.php)
     */
 
-    function pickDice( $dice_id, $dice_face ) 
+    function pickDice( $dice_id, $dice_face, $zombie_player_id = null ) 
     {
-        // Check that this is player's turn and that it is a "possible action" at this game state (see states.inc.php)
-        self::checkAction( 'pickDice' ); 
-        
-        $player_id = self::getActivePlayerId();
+        self::debug("/////////////////////// pickDice ///////////////////////////");
+        self::dump("zombie_player_id", $zombie_player_id);
+        if ($zombie_player_id == null) {
+            // Check that this is player's turn and that it is a "possible action" at this game state (see states.inc.php)
+            self::checkAction( 'pickDice' ); 
+            $player_id = self::getActivePlayerId();
+            $player_name = self::getActivePlayerName();
+        } else {
+            $player_id = $zombie_player_id;
+            $player_name = self::getPlayerNameById($zombie_player_id);
+        }
+
+        self::debug("/////////////////////// name : $player_name ///////////////////////////");
 
         $sql = "SELECT id FROM dice WHERE id = ".$dice_id." AND player_id is null";
         $dice = self::getObjectFromDb( $sql );
@@ -776,7 +785,7 @@ class catcafe extends Table
         // Notify all players
         self::notifyAllPlayers( "dicePicked", clienttranslate( '${player_name} picked a die ${ctc_log_dice}' ), array(
             'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
+            'player_name' => $player_name,
             'dice_id' => $dice_id,
             'dice_face' => $dice_face,
             'ctc_log_dice' => $dice_face
@@ -813,12 +822,20 @@ class catcafe extends Table
         $this->gamestate->nextState( "dicePicked" );
     }
 
-    function pass( $player_id )
+    function pass( $zombie_player_id = null )
     {
-        // Check that this is player's turn and that it is a "possible action" at this game state (see states.inc.php)
-        self::checkAction( 'pass' ); 
+        self::debug( "**************************** PASS *******************************" );
+        self::dump( 'zombie_player_id', $zombie_player_id );
 
-        $player_id = self::getCurrentPlayerId();
+        // Check that this is player's turn and that it is a "possible action" at this game state (see states.inc.php)
+        if ($zombie_player_id == null) {
+            self::checkAction( 'pass' );
+            $player_id = self::getCurrentPlayerId();
+        } else {
+            $player_id = $zombie_player_id;
+        }
+        
+        $player_id = $zombie_player_id ?? self::getCurrentPlayerId(); // ?? operator will check if $active_player_id is null and use self::getCurrentPlayerId() if it is, $active_player_id otherwise
 
         // Update available footprints
         $sql = "UPDATE player SET has_passed = true, footprint_available = LEAST(footprint_available + ".$this->gameConstants["FOOTPRINTS_GAINED_PASSING"].", (".$this->gameConstants["FOOTPRINTS_TOTAL"]." - footprint_used)) WHERE player_id = '$player_id'";
@@ -829,10 +846,17 @@ class catcafe extends Table
         $footprint_available = $res["footprint_available"];
         $footprint_used = $res["footprint_used"];
 
+        $zombie_name = null;
+        if ($zombie_player_id) {
+            // $players = self::loadPlayersBasicInfos();
+            // $zombie_name = $players[$zombie_player_id]["name"];
+            self::getPlayerNameById($zombie_player_id);
+        }
+
         // Notify all players
         self::notifyAllPlayers( "passed", clienttranslate( '${player_name} passed' ), array(
             'player_id' => $player_id,
-            'player_name' => self::getCurrentPlayerName(),
+            'player_name' => $zombie_name ?? self::getCurrentPlayerName(),
             'footprint_available' => $footprint_available,
             'footprint_used' => $footprint_used
             )
@@ -893,11 +917,13 @@ class catcafe extends Table
         $this->gamestate->nextPrivateState($player_id, "diceForLocationChosen");
     }
 
-    function cancelLocationDiceChoice( $player_id ) {
+    function cancelLocationDiceChoice( $zombie_player_id = null ) {
         // Check that this is player's turn and that it is a "possible action" at this game state (see states.inc.php)
         self::checkAction( 'cancelLocationDiceChoice' ); 
 
-        $player_id = self::getCurrentPlayerId();
+        self::debug( "**************************** CANCEL LOCATION DICE CHOICE *******************************" );
+        self::dump( 'zombie_player_id', $zombie_player_id );
+        $player_id = $zombie_player_id ?? self::getCurrentPlayerId(); // ?? operator will check if $active_player_id is null and use self::getCurrentPlayerId() if it is, $active_player_id otherwise
 
         $sql = "UPDATE player SET first_chosen_played_order = null, second_chosen_played_order = null WHERE player_id = '$player_id'";
                 self::DbQuery($sql);
@@ -907,10 +933,17 @@ class catcafe extends Table
         $footprint_available = $res['footprint_available'];
         $footprint_used = $res['footprint_used'];
 
+        $zombie_name = null;
+        if ($zombie_player_id) {
+            // $players = self::loadPlayersBasicInfos();
+            // $zombie_name = $players[$zombie_player_id]["name"];
+            self::getPlayerNameById($zombie_player_id);
+        }
+
         // Notify all players
         self::notifyAllPlayers( "backToTurnDrawingPhase1", "", array(
             'player_id' => $player_id,
-            'player_name' => self::getCurrentPlayerName(),
+            'player_name' => $zombie_name ?? self::getCurrentPlayerName(),
             'x' => -1,
             'y' => -1,
             'footprint_available' => $footprint_available,
@@ -922,11 +955,13 @@ class catcafe extends Table
         $this->gamestate->nextPrivateState( $player_id, "locationDiceChoiceCancelled" );
     }
 
-    function cancelLocationChoice( $player_id ) {
+    function cancelLocationChoice( $zombie_player_id = null ) {
         // Check that this is player's turn and that it is a "possible action" at this game state (see states.inc.php)
         self::checkAction( 'cancelLocationChoice' ); 
 
-        $player_id = self::getCurrentPlayerId();
+        self::debug( "**************************** CANCEL LOCATION DICE CHOICE *******************************" );
+        self::dump( 'zombie_player_id', $zombie_player_id );
+        $player_id = $zombie_player_id ?? self::getCurrentPlayerId(); // ?? operator will check if $active_player_id is null and use self::getCurrentPlayerId() if it is, $active_player_id otherwise
 
         $sql = "SELECT location_chosen FROM player WHERE player_id = '$player_id'";
         $location = self::getUniqueValueFromDB($sql);
@@ -950,10 +985,17 @@ class catcafe extends Table
         $footprint_available = $res['footprint_available'];
         $footprint_used = $res['footprint_used'];
 
+        $zombie_name = null;
+        if ($zombie_player_id) {
+            // $players = self::loadPlayersBasicInfos();
+            // $zombie_name = $players[$zombie_player_id]["name"];
+            self::getPlayerNameById($zombie_player_id);
+        }
+
         // Notify all players
         self::notifyAllPlayers( "backToTurnDrawingPhase1", "", array(
             'player_id' => $player_id,
-            'player_name' => self::getCurrentPlayerName(),
+            'player_name' => $zombie_player_id ?? self::getCurrentPlayerName(),
             'x' => $locations[0],
             'y' => $locations[1],
             'footprint_available' => $footprint_available,
@@ -965,11 +1007,13 @@ class catcafe extends Table
         $this->gamestate->nextPrivateState( $player_id, "locationChoiceCancelled" );
     }
 
-    function cancelShapeChoice( $player_id ) {
+    function cancelShapeChoice( $zombie_player_id = null ) {
         // Check that this is player's turn and that it is a "possible action" at this game state (see states.inc.php)
         self::checkAction( 'cancelShapeChoice' ); 
 
-        $player_id = self::getCurrentPlayerId();
+        self::debug( "**************************** CANCEL LOCATION DICE CHOICE *******************************" );
+        self::dump( 'zombie_player_id', $zombie_player_id );
+        $player_id = $zombie_player_id ?? self::getCurrentPlayerId(); // ?? operator will check if $active_player_id is null and use self::getCurrentPlayerId() if it is, $active_player_id otherwise
 
         $sql = "SELECT location_chosen FROM player WHERE player_id = '$player_id'";
         $location = self::getUniqueValueFromDB($sql);
@@ -996,10 +1040,17 @@ class catcafe extends Table
         $sql = "SELECT score_cat_1, score_cat_2, score_cat_3, score_cat_4, score_cat_5, score_cat_6 FROM player WHERE player_id = '$player_id'";
         $scores_cat_info = self::getObjectFromDB( $sql );
 
+        $zombie_name = null;
+        if ($zombie_player_id) {
+            // $players = self::loadPlayersBasicInfos();
+            // $zombie_name = $players[$zombie_player_id]["name"];
+            self::getPlayerNameById($zombie_player_id);
+        }
+
         // Notify all players
         self::notifyAllPlayers( "backToTurnDrawingPhase1", "", array(
             'player_id' => $player_id,
-            'player_name' => self::getCurrentPlayerName(),
+            'player_name' => $zombie_player_id ?? self::getCurrentPlayerName(),
             'x' => $locations[0],
             'y' => $locations[1],
             'footprint_available' => $footprint_available,
@@ -1293,7 +1344,7 @@ class catcafe extends Table
 
     function argSetupDrawing() {
         $player_id = self::getCurrentPlayerId();
-
+        
         $playersBasicInfos = $this->loadPlayersBasicInfos();
         $res['playersBasicInfos'] = $playersBasicInfos;
 
@@ -1945,9 +1996,13 @@ class catcafe extends Table
 
     function zombieTurn( $state, $active_player )
     {
+        self::debug( "**************************** ZOMBIE TURN *******************************" );
     	$statename = $state['name'];
     	
         if ($state['type'] === "activeplayer") {
+
+            self::debug( "**************************** ACTIVEPLAYER *******************************" );
+            self::debug( "**************************** $statename *******************************" );
             switch ($statename) {
                 case "playerTurnPicking":
                     $sql = "SELECT id, dice_value FROM dice WHERE player_id IS NULL";
@@ -1956,24 +2011,42 @@ class catcafe extends Table
                     $nb = count($dices);
                     $dice_number = bga_rand(0, ($nb-1));
 
-                    $this->pickDice( $dices[$dice_number]["id"], $dices[$dice_number]["dice_value"] );
+                    $this->pickDice( $dices[$dice_number]["id"], $dices[$dice_number]["dice_value"], $active_player );
 
                     break;
                 
+                default:
+                    $this->gamestate->nextState( "zombiePass" );
+                	break;
+            }
+
+            return;
+        }
+
+        if ($state['type'] === "multipleactiveplayer") {
+            self::debug( "**************************** MULTIPLEACTIVEPLAYER *******************************" );
+
+            // Make sure player is in a non blocking status for role turn
+            $this->gamestate->setPlayerNonMultiactive( $active_player, '' );
+
+            switch ($statename) {
+                case "multiplayerDrawingPhase":
+                    break;
+
                 case "playerTurnDrawingPhase1":
-                    $this->pass( self::getActivePlayerId() );
+                    $this->pass( $active_player );
                     break;
 
                 case "playerTurnDrawingPhase2":
-                    $this->cancelLocationDiceChoice( self::getActivePlayerId() );
+                    $this->cancelLocationDiceChoice( $active_player );
                     break;
 
                 case "playerTurnDrawingPhase3":
-                    $this->cancelLocationChoice( self::getActivePlayerId() );
+                    $this->cancelLocationChoice( $active_player );
                     break;
 
                 case "playerTurnCatSelection":
-                    $this->cancelShapeChoice( self::getActivePlayerId() );
+                    $this->cancelShapeChoice( $active_player );
                     break;
 
                 default:
@@ -1984,11 +2057,34 @@ class catcafe extends Table
             return;
         }
 
-        if ($state['type'] === "multipleactiveplayer") {
+        if ($state['type'] === "private") {
+            
+            self::debug( "**************************** PRIVATE *******************************" );
+
             // Make sure player is in a non blocking status for role turn
             $this->gamestate->setPlayerNonMultiactive( $active_player, '' );
-            
-            return;
+
+            switch ($statename) {
+                case "playerTurnDrawingPhase1":
+                    $this->pass( $active_player );
+                    break;
+
+                case "playerTurnDrawingPhase2":
+                    $this->cancelLocationDiceChoice( $active_player );
+                    break;
+
+                case "playerTurnDrawingPhase3":
+                    $this->cancelLocationChoice( $active_player );
+                    break;
+
+                case "playerTurnCatSelection":
+                    $this->cancelShapeChoice( $active_player );
+                    break;
+
+                default:
+                    $this->gamestate->nextState( "zombiePass" );
+                    break;
+            }
         }
 
         throw new feException( clienttranslate("Zombie mode not supported at this game state: ").$statename );
