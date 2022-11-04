@@ -796,7 +796,7 @@ class catcafe extends Table
         $this->gamestate->nextState( "dicePicked" );
     }
 
-    function draw( $player_id, $x, $y, $shape ) 
+    function draw( $x, $y, $shape ) 
     {
         // Check that this is player's turn and that it is a "possible action" at this game state (see states.inc.php)
         self::checkAction( 'draw' ); 
@@ -826,17 +826,22 @@ class catcafe extends Table
     {
         self::debug( "**************************** PASS *******************************" );
         self::dump( 'zombie_player_id', $zombie_player_id );
+        self::debug( "**************************** CHECK *******************************" );
 
         // Check that this is player's turn and that it is a "possible action" at this game state (see states.inc.php)
         if ($zombie_player_id == null) {
+            self::debug( "++++++++ null" );
             self::checkAction( 'pass' );
             $player_id = self::getCurrentPlayerId();
+            $player_name = self::getCurrentPlayerName();
         } else {
+            self::debug( "++++++++ !null" );
             $player_id = $zombie_player_id;
+            $player_name = self::getPlayerNameById($zombie_player_id);
         }
-        
-        $player_id = $zombie_player_id ?? self::getCurrentPlayerId(); // ?? operator will check if $active_player_id is null and use self::getCurrentPlayerId() if it is, $active_player_id otherwise
 
+        self::dump( 'player_name', $player_name );
+        
         // Update available footprints
         $sql = "UPDATE player SET has_passed = true, footprint_available = LEAST(footprint_available + ".$this->gameConstants["FOOTPRINTS_GAINED_PASSING"].", (".$this->gameConstants["FOOTPRINTS_TOTAL"]." - footprint_used)) WHERE player_id = '$player_id'";
         self::DbQuery($sql);
@@ -846,17 +851,10 @@ class catcafe extends Table
         $footprint_available = $res["footprint_available"];
         $footprint_used = $res["footprint_used"];
 
-        $zombie_name = null;
-        if ($zombie_player_id) {
-            // $players = self::loadPlayersBasicInfos();
-            // $zombie_name = $players[$zombie_player_id]["name"];
-            self::getPlayerNameById($zombie_player_id);
-        }
-
         // Notify all players
         self::notifyAllPlayers( "passed", clienttranslate( '${player_name} passed' ), array(
             'player_id' => $player_id,
-            'player_name' => $zombie_name ?? self::getCurrentPlayerName(),
+            'player_name' => $player_name,
             'footprint_available' => $footprint_available,
             'footprint_used' => $footprint_used
             )
@@ -874,12 +872,12 @@ class catcafe extends Table
         $this->gamestate->setPlayerNonMultiactive( $player_id, "" );
     }
 
-    function chooseDiceForLocation( $player_id, $num_player_dice, $player_dice_face ) {
+    function chooseDiceForLocation( $num_player_dice, $player_dice_face ) {
 
         // Check that this is player's turn and that it is a "possible action" at this game state (see states.inc.php)
         self::checkAction( 'chooseDiceForLocation' ); 
 
-        // $player_id = self::getActivePlayerId();
+        $player_id = self::getCurrentPlayerId();
 
         // NEW ====================================
         // We check that the dice is still playable
@@ -1063,7 +1061,7 @@ class catcafe extends Table
         $this->gamestate->nextPrivateState( $player_id, "shapeChoiceCancelled" );
     }
 
-    function chooseDrawingLocation( $player_id, $x, $y ) {
+    function chooseDrawingLocation( $x, $y ) {
         self::checkAction( 'chooseDrawingLocation' ); 
 
         // self::trace( 'chooseDrawingLocation' ); 
@@ -1123,7 +1121,7 @@ class catcafe extends Table
         $this->gamestate->nextPrivateState( $player_id, "drawingLocationChosen" );
     }
 
-    function chooseShape( $player_id, $shape ) {
+    function chooseShape( $shape ) {
         self::checkAction( 'chooseShape' ); 
 
         $player_id = self::getCurrentPlayerId();
@@ -1229,7 +1227,7 @@ class catcafe extends Table
         }
     }
 
-    function chooseCat( $player_id, $cat ) {
+    function chooseCat( $cat ) {
         self::checkAction( 'chooseCat' ); 
 
         $player_id = self::getCurrentPlayerId();
@@ -1343,14 +1341,14 @@ class catcafe extends Table
     }
 
     function argSetupDrawing() {
-        $player_id = self::getCurrentPlayerId();
+        // $player_id = self::getCurrentPlayerId();
         
         $playersBasicInfos = $this->loadPlayersBasicInfos();
         $res['playersBasicInfos'] = $playersBasicInfos;
 
-        $sql = "SELECT id, dice_value FROM dice WHERE player_id = '$player_id'";
-        $dicePlayer = self::getObjectFromDb( $sql );
-        $res['dicePlayer'] = $dicePlayer;
+        // $sql = "SELECT id, dice_value FROM dice WHERE player_id = '$player_id'";
+        // $dicePlayer = self::getObjectFromDb( $sql );
+        // $res['dicePlayer'] = $dicePlayer;
 
         $sql = "SELECT id, dice_value FROM dice WHERE player_id IS NULL";
         $diceCommon = self::getObjectFromDb( $sql );
@@ -1364,44 +1362,46 @@ class catcafe extends Table
     // Select a dice for position
     function argPlayerTurnDrawingPhase1() 
     {
-        $playerBoards = self::getPlayerBoards();
+        // $playerBoards = self::getPlayerBoards();
 
-        $player_id = self::getCurrentPlayerId();
+        // $player_id = self::getCurrentPlayerId();
 
-        $sql = "SELECT dice_value FROM dice WHERE player_id = '$player_id'";
-        $dice_1 = self::getObjectFromDb( $sql );
+        // $sql = "SELECT dice_value FROM dice WHERE player_id = '$player_id'";
+        // $dice_1 = self::getObjectFromDb( $sql );
 
-        $sql = "SELECT dice_value FROM dice WHERE player_id is null";
-        $dice_2 = self::getObjectFromDb( $sql );
+        // $sql = "SELECT dice_value FROM dice WHERE player_id is null";
+        // $dice_2 = self::getObjectFromDb( $sql );
 
 
-        // echo "///////////////////////////////////////////////////////////////////";
-        // var_dump($player_id);
+        // // echo "///////////////////////////////////////////////////////////////////";
+        // // var_dump($player_id);
 
-        $res = array();
-        $res['possibleDrawings'] = array();
+        // $res = array();
+        // $res['possibleDrawings'] = array();
 
-        // if spectator, these values are not set
-        if (isset($dice_1['dice_value']) && $dice_2['dice_value']) {
-            // var_dump($dice_1['dice_value']);
-            // var_dump($dice_2['dice_value']);
+        // // if spectator, these values are not set
+        // if (isset($dice_1['dice_value']) && $dice_2['dice_value']) {
+        //     // var_dump($dice_1['dice_value']);
+        //     // var_dump($dice_2['dice_value']);
 
-            $res['possibleDrawings'] = self::getPossibleDrawings( $player_id, $dice_1['dice_value'], $dice_2['dice_value'] );
-        }
-        $res['player_id'] = $player_id;
+        //     $res['possibleDrawings'] = self::getPossibleDrawings( $player_id, $dice_1['dice_value'], $dice_2['dice_value'] );
+        // }
+        // $res['player_id'] = $player_id;
 
-        $playersBasicInfos = $this->loadPlayersBasicInfos();
-        $res['playersBasicInfos'] = $playersBasicInfos;
+        // $playersBasicInfos = $this->loadPlayersBasicInfos();
+        // $res['playersBasicInfos'] = $playersBasicInfos;
 
-        $sql = "SELECT id, dice_value FROM dice WHERE player_id = '$player_id'";
-        $dicePlayer = self::getObjectFromDb( $sql );
-        $res['dicePlayer'] = $dicePlayer;
+        // $sql = "SELECT id, dice_value FROM dice WHERE player_id = '$player_id'";
+        // $dicePlayer = self::getObjectFromDb( $sql );
+        // $res['dicePlayer'] = $dicePlayer;
 
-        $sql = "SELECT id, dice_value FROM dice WHERE player_id IS NULL";
-        $diceCommon = self::getObjectFromDb( $sql );
-        $res['diceCommon'] = $diceCommon;
+        // $sql = "SELECT id, dice_value FROM dice WHERE player_id IS NULL";
+        // $diceCommon = self::getObjectFromDb( $sql );
+        // $res['diceCommon'] = $diceCommon;
         
-        // var_dump($res);
+        // // var_dump($res);
+
+        $res = null;
 
         return $res;
     }

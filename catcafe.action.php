@@ -61,13 +61,13 @@ class action_catcafe extends APP_GameAction
 
         // Retrieve arguments
         // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-        $player_id = self::getArg( "player_id", AT_posint, true );
+        // $player_id = self::getArg( "player_id", AT_posint, true );
         $x = self::getArg( "x", AT_posint, true );
         $y = self::getArg( "y", AT_posint, true );
         $shape = self::getArg( "shape", AT_posint, true );
 
         // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
-        $this->game->draw( $player_id, $x, $y, $shape );
+        $this->game->draw( $x, $y, $shape );
 
         self::ajaxResponse( );
     }
@@ -76,42 +76,18 @@ class action_catcafe extends APP_GameAction
     {
         self::setAjaxMode();     
 
-        // Retrieve arguments
-        // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-        $player_id = self::getArg( "player_id", AT_posint, true );
+        $this->game->pass();
 
-        // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
-        $this->game->pass( $player_id );
-
-        self::ajaxResponse( );
-    }
-
-    public function selectDiceForLocation()
-    {
-        self::setAjaxMode();     
-
-        // Retrieve arguments
-        // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-        $player_id = self::getArg( "player_id", AT_posint, true );
-
-        // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
-        $this->game->selectDiceForLocation( $player_id );
-
-        self::ajaxResponse( );
+        self::ajaxResponse();
     }
 
     public function cancelLocationDiceChoice() 
     {
         self::setAjaxMode();     
 
-        // Retrieve arguments
-        // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-        $player_id = self::getArg( "player_id", AT_posint, true );
+        $this->game->cancelLocationDiceChoice();
 
-        // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
-        $this->game->cancelLocationDiceChoice( $player_id );
-
-        self::ajaxResponse( );
+        self::ajaxResponse();
     }
 
     public function chooseDiceForLocation()
@@ -120,12 +96,11 @@ class action_catcafe extends APP_GameAction
 
         // Retrieve arguments
         // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-        $player_id = self::getArg( "player_id", AT_posint, true );
         $num_player_dice = self::getArg( "num_player_dice", AT_posint, true );
         $dice_face = self::getArg( "dice_face", AT_posint, true );
 
         // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
-        $this->game->chooseDiceForLocation( $player_id, $num_player_dice, $dice_face );
+        $this->game->chooseDiceForLocation( $num_player_dice, $dice_face );
 
         self::ajaxResponse( );
     }
@@ -134,14 +109,9 @@ class action_catcafe extends APP_GameAction
     {
         self::setAjaxMode();     
 
-        // Retrieve arguments
-        // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-        $player_id = self::getArg( "player_id", AT_posint, true );
+        $this->game->cancelLocationChoice();
 
-        // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
-        $this->game->cancelLocationChoice( $player_id );
-
-        self::ajaxResponse( );
+        self::ajaxResponse();
     }
 
     public function chooseDrawingLocation()
@@ -150,12 +120,11 @@ class action_catcafe extends APP_GameAction
 
         // Retrieve arguments
         // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-        $player_id = self::getArg( "player_id", AT_posint, true );
         $x = self::getArg( "x", AT_posint, true );
         $y = self::getArg( "y", AT_posint, true );
 
         // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
-        $this->game->chooseDrawingLocation( $player_id, $x, $y );
+        $this->game->chooseDrawingLocation( $x, $y );
 
         self::ajaxResponse( );
     }
@@ -164,12 +133,7 @@ class action_catcafe extends APP_GameAction
     {
         self::setAjaxMode();     
 
-        // Retrieve arguments
-        // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-        $player_id = self::getArg( "player_id", AT_posint, true );
-
-        // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
-        $this->game->cancelShapeChoice( $player_id );
+        $this->game->cancelShapeChoice();
 
         self::ajaxResponse( );
     }
@@ -180,11 +144,10 @@ class action_catcafe extends APP_GameAction
 
         // Retrieve arguments
         // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-        $player_id = self::getArg( "player_id", AT_posint, true );
         $shape = self::getArg( "shape", AT_posint, true );
 
         // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
-        $this->game->chooseShape( $player_id, $shape );
+        $this->game->chooseShape( $shape );
 
         self::ajaxResponse( );
     }
@@ -195,11 +158,10 @@ class action_catcafe extends APP_GameAction
 
         // Retrieve arguments
         // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-        $player_id = self::getArg( "player_id", AT_posint, true );
         $cat = self::getArg( "cat", AT_posint, true );
 
         // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
-        $this->game->chooseCat( $player_id, $cat );
+        $this->game->chooseCat( $cat );
 
         self::ajaxResponse( );
     }
