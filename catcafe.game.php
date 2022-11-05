@@ -1411,24 +1411,31 @@ class catcafe extends Table
     {
         $playerBoards = self::getPlayerBoards();
 
-        $player_id = self::getCurrentPlayerId();
+        $sql = "SELECT player_id, footprint_used, first_chosen_dice_val, first_chosen_played_order, second_chosen_dice_val FROM player";
+        $sqlRes = self::getCollectionFromDb( $sql );
+        
+        $player_ids = array_keys($sqlRes);
+        $argRes = array();
 
-        $sql = "SELECT footprint_used, footprint_available, first_chosen_dice_num, first_chosen_dice_val, first_chosen_played_order, second_chosen_dice_num, second_chosen_dice_val, second_chosen_played_order FROM player WHERE player_id = '$player_id'";
-        $res = self::getObjectFromDb( $sql );
+        foreach ($player_ids as $player_id) {
+            $res = $sqlRes[$player_id];
 
-        $footprint_used = $res['footprint_used'];
-        $footprint_available = $res['footprint_available'];
-        $first_chosen_dice_num = $res['first_chosen_dice_num'];
-        $first_chosen_dice_val = $res['first_chosen_dice_val'];
-        $first_chosen_played_order = $res['first_chosen_played_order'];
-        $second_chosen_dice_num = $res['second_chosen_dice_num'];
-        $second_chosen_dice_val = $res['second_chosen_dice_val'];
-        $second_chosen_played_order = $res['second_chosen_played_order'];
+            $footprint_used = $res['footprint_used'];
+            $first_chosen_dice_val = $res['first_chosen_dice_val'];
+            $first_chosen_played_order = $res['first_chosen_played_order'];
+            $second_chosen_dice_val = $res['second_chosen_dice_val'];
 
-        if ($first_chosen_played_order == 1) {
-            $selected_dice = $first_chosen_dice_val;
-        } else {
-            $selected_dice = $second_chosen_dice_val;
+            if ($first_chosen_played_order == 1) {
+                $selected_dice = $first_chosen_dice_val;
+            } else {
+                $selected_dice = $second_chosen_dice_val;
+            }
+
+            $argRes[$player_id] = [
+                'player_id' => $player_id,
+                'possibleLocations' => self::getPossibleLocationsWithOneDice( $player_id, $selected_dice ),
+                'footprint_used' => $footprint_used
+            ];
         }
 
         // echo "///////////////////////////////////////////////////////////////////";
@@ -1436,64 +1443,102 @@ class catcafe extends Table
         // var_dump($dice_1['dice_value']);
         // var_dump($dice_2['dice_value']);
 
-        $res = array();
-        $res['possibleLocations'] = self::getPossibleLocationsWithOneDice( $player_id, $selected_dice );
-        $res['player_id'] = $player_id;
-
-        $playersBasicInfos = $this->loadPlayersBasicInfos();
-        $res['playersBasicInfos'] = $playersBasicInfos;
+        $argRes['playersBasicInfos'] = $this->loadPlayersBasicInfos();
 
         $sql = "SELECT id, dice_value FROM dice WHERE player_id IS NULL";
         $diceCommon = self::getObjectFromDb( $sql );
-        $res['diceCommon'] = $diceCommon;
+        $argRes['diceCommon'] = $diceCommon;
 
-        $res['footprint_used'] = $footprint_used;
+        $argRes['footprint_used'] = $footprint_used;
 
-        // var_dump($res);
+        // var_dump($argRes);
 
-        return $res;
+        return $argRes;
     }
 
     function argPlayerTurnDrawingPhase3() 
     {
-        $player_id = self::getCurrentPlayerId();
-
         $res = array();
-        $sql = "SELECT footprint_used, footprint_available, first_chosen_dice_num, first_chosen_dice_val, first_chosen_played_order, second_chosen_dice_num, second_chosen_dice_val, second_chosen_played_order FROM player WHERE player_id = '$player_id'";
-        $res = self::getObjectFromDb( $sql );
+        $sql = "SELECT player_id, footprint_used, footprint_available, first_chosen_dice_val, first_chosen_played_order, second_chosen_dice_val FROM player";
+        $sqlRes = self::getCollectionFromDb( $sql );
+
+        $player_ids = array_keys($sqlRes);
 
         // self::dump('res', $res);
 
-        $footprint_used = $res['footprint_used'];
-        $footprint_available = $res['footprint_available'];
-        $first_chosen_dice_num = $res['first_chosen_dice_num'];
-        $first_chosen_dice_val = $res['first_chosen_dice_val'];
-        $first_chosen_played_order = $res['first_chosen_played_order'];
-        $second_chosen_dice_num = $res['second_chosen_dice_num'];
-        $second_chosen_dice_val = $res['second_chosen_dice_val'];
-        $second_chosen_played_order = $res['second_chosen_played_order'];
+        $argRes = array();
+        foreach ($player_ids as $player_id) {
+            $res = $sqlRes[$player_id];
 
-        $remaining_dice_val = 0;
+            $footprint_used = $res['footprint_used'];
+            $footprint_available = $res['footprint_available'];
+            $first_chosen_dice_val = $res['first_chosen_dice_val'];
+            $first_chosen_played_order = $res['first_chosen_played_order'];
+            $second_chosen_dice_val = $res['second_chosen_dice_val'];
 
-        if (is_null($first_chosen_played_order)) {
-            $remaining_dice_val = $first_chosen_dice_val;
-        } else {
-            $remaining_dice_val = $second_chosen_dice_val;
+            $remaining_dice_val = 0;
+
+            if (is_null($first_chosen_played_order)) {
+                $remaining_dice_val = $first_chosen_dice_val;
+            } else {
+                $remaining_dice_val = $second_chosen_dice_val;
+            }
+
+            $min_shape = max(1, $remaining_dice_val - $footprint_available);
+            $max_shape = min(6, $remaining_dice_val + $footprint_available);
+
+
+            $argRes[$player_id] = [
+                'player_id' => $player_id,
+                'min_shape' => $min_shape,
+                'max_shape' => $max_shape,
+                'footprint_used' => $footprint_used,
+                'dice' => $remaining_dice_val
+            ];
         }
-
-        $min_shape = max(1, $remaining_dice_val - $footprint_available);
-        $max_shape = min(6, $remaining_dice_val + $footprint_available);
-
-        $res = array();
-        $res['player_id'] = $player_id;
-        $res['min_shape'] = $min_shape;
-        $res['max_shape'] = $max_shape;
-        $res['footprint_used'] = $footprint_used;
-        $res['dice'] = $remaining_dice_val;
         
         // self::dump('res', $res);
 
-        return $res;
+        return $argRes;
+    }
+
+    function argPlayerTurnCatSelection() 
+    {
+        $sql = "SELECT player_id, score_cat_1, score_cat_2, score_cat_3, score_cat_4, score_cat_5, score_cat_6 FROM player";
+        $score_cat = self::getCollectionFromDb( $sql );
+
+        $player_ids = array_keys($score_cat);
+        self::dump('player_ids', $player_ids);
+
+        $argRes = array();
+        foreach ($player_ids as $player_id) {
+            $argRes[$player_id] = array();
+            $argRes[$player_id]['score_cat'] = array();
+            for ($i=1; $i<=6; $i++) {
+                $argRes[$player_id]['score_cat'][] = $score_cat[$player_id]['score_cat_'.$i];
+            }
+            $argRes[$player_id]['player_id'] = $player_id;
+
+            $cat_scoring = array();
+            $sql = "SELECT 
+                        d.state AS id, COUNT(*) AS nb, p.score_cat_1, p.score_cat_2, p.score_cat_3, p.score_cat_4, p.score_cat_5, p.score_cat_6 
+                    FROM 
+                        drawing d 
+                        JOIN player p ON d.player_id = p.player_id 
+                    WHERE 
+                        d.player_id = $player_id AND d.state > 0 
+                    GROUP BY 
+                        d.state, p.score_cat_1, p.score_cat_2, p.score_cat_3, p.score_cat_4, p.score_cat_5, p.score_cat_6 
+                    ORDER BY 
+                        d.state";
+            $cat_scoring = self::getCollectionFromDB( $sql );
+
+            $possible_sub_scoring = $cat_scoring;
+
+            $argRes[$player_id]['possible_sub_scoring'] = $possible_sub_scoring;
+        }
+
+        return $argRes;
     }
 
     function argCleanBoardForNextRound() 
@@ -1528,41 +1573,6 @@ class catcafe extends Table
         return $res;
     }
 
-    function argPlayerTurnCatSelection() 
-    {
-        $player_id = self::getCurrentPlayerId();
-
-        $sql = "SELECT score_cat_1, score_cat_2, score_cat_3, score_cat_4, score_cat_5, score_cat_6 FROM player WHERE player_id = '$player_id'";
-        $score_cat = self::getObjectFromDb( $sql );
-
-        $res = array();
-
-        $res['score_cat'] = array();
-        for ($i=1; $i<=6; $i++) {
-            $res['score_cat'][] = $score_cat['score_cat_'.$i];
-        }
-        $res['player_id'] = $player_id;
-
-        $cat_scoring = array();
-        $sql = "SELECT 
-                    d.state AS id, COUNT(*) AS nb, p.score_cat_1, p.score_cat_2, p.score_cat_3, p.score_cat_4, p.score_cat_5, p.score_cat_6 
-                FROM 
-                    drawing d 
-                    JOIN player p ON d.player_id = p.player_id 
-                WHERE 
-                    d.player_id = $player_id AND d.state > 0 
-                GROUP BY 
-                    d.state, p.score_cat_1, p.score_cat_2, p.score_cat_3, p.score_cat_4, p.score_cat_5, p.score_cat_6 
-                ORDER BY 
-                    d.state";
-        $cat_scoring = self::getCollectionFromDB( $sql );
-
-        $possible_sub_scoring = $cat_scoring;
-
-        $res['possible_sub_scoring'] = $possible_sub_scoring;
-
-        return $res;
-    }
     /*
     
     Example for game state "MyGameState":
@@ -2028,24 +2038,30 @@ class catcafe extends Table
 
             // Make sure player is in a non blocking status for role turn
             $this->gamestate->setPlayerNonMultiactive( $active_player, '' );
+            self::debug( "------------ 0 ------------" );
 
             switch ($statename) {
                 case "multiplayerDrawingPhase":
+                    self::debug( "------------ 1 ------------" );
                     break;
 
                 case "playerTurnDrawingPhase1":
+                    self::debug( "------------ 2 ------------" );
                     $this->pass( $active_player );
                     break;
 
                 case "playerTurnDrawingPhase2":
+                    self::debug( "------------ 3 ------------" );
                     $this->cancelLocationDiceChoice( $active_player );
                     break;
 
                 case "playerTurnDrawingPhase3":
+                    self::debug( "------------ 4 ------------" );
                     $this->cancelLocationChoice( $active_player );
                     break;
 
                 case "playerTurnCatSelection":
+                    self::debug( "------------ 5 ------------" );
                     $this->cancelShapeChoice( $active_player );
                     break;
 
@@ -2063,21 +2079,26 @@ class catcafe extends Table
 
             // Make sure player is in a non blocking status for role turn
             $this->gamestate->setPlayerNonMultiactive( $active_player, '' );
+            self::debug( "------------ 00 ------------" );
 
             switch ($statename) {
                 case "playerTurnDrawingPhase1":
+                    self::debug( "------------ 6 ------------" );
                     $this->pass( $active_player );
                     break;
 
                 case "playerTurnDrawingPhase2":
+                    self::debug( "------------ 7 ------------" );
                     $this->cancelLocationDiceChoice( $active_player );
                     break;
 
                 case "playerTurnDrawingPhase3":
+                    self::debug( "------------ 8 ------------" );
                     $this->cancelLocationChoice( $active_player );
                     break;
 
                 case "playerTurnCatSelection":
+                    self::debug( "------------ 9 ------------" );
                     $this->cancelShapeChoice( $active_player );
                     break;
 
@@ -2085,6 +2106,8 @@ class catcafe extends Table
                     $this->gamestate->nextState( "zombiePass" );
                     break;
             }
+
+            return;
         }
 
         throw new feException( clienttranslate("Zombie mode not supported at this game state: ").$statename );

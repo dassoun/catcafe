@@ -462,15 +462,16 @@ function (dojo, declare) {
                     break;
 
                 // Choose location for drawing
-                case 'playerTurnDrawingPhase2':
-                    this.updatePlayerBoardForLocationChoice( args.args );
-
-                    if( this.isCurrentPlayerActive() ) {
-
-                        let possibleLocations = args.args.possibleLocations;
-                        let footprint_used = args.args.footprint_used;
-
+                case 'playerTurnDrawingPhase2': { // curly braces just because let possibleLocations is declared again later...
+                    // console.log( args.args );
+                    // console.log( this.player_id );
+                    // console.log( args.args[this.player_id] );
+                    this.updatePlayerBoardForLocationChoice( args.args[this.player_id] );
+                    
                         let player_id = this.player_id;
+
+                        let possibleLocations = args.args[player_id].possibleLocations;
+                        let footprint_used = args.args[player_id].footprint_used;
 
                         for (var id in possibleLocations[player_id]) {
                             let x = possibleLocations[player_id][id].x;
@@ -484,20 +485,9 @@ function (dojo, declare) {
                             this.connections.push( dojo.connect( elmt , 'onmouseenter', () => this.updatePrevisionnalCostEnter(player_id, footprint_used, cost) ) );
                             this.connections.push( dojo.connect( elmt , 'onmouseleave', () => this.updatePrevisionnalCostLeave(player_id, footprint_used, cost) ) );
                         }
-
-                        // // this.connections.push( dojo.connect( elmt , 'on', () => this.onClickSquare('square_'+player_id+'_'+x+'_'+y) ) );
-                        // for (var i=0; i<=5; i++) {
-                        //     var nl = dojo.query('.cost_'+i);
-
-                        //     for (var j=0; j<nl.length; j++) {
-                        //         this.connections.push( dojo.connect( elmt , 'onmouseenter', () => this.onEnterPossiblePosition(cost) ) );
-                        //     }
-                        // }
-                        // var nl = dojo.query(".cost_1");
-                        // console.log(nl);
-
-                    }
+                    
                     break;
+                }
 
                 case 'playerTurnDrawingPhase3':
                     this.updatePlayerBoardForShapeSelection( args.args );
@@ -505,11 +495,11 @@ function (dojo, declare) {
                     // console.log("args.args :");
                     // console.log(args.args);
 
-                    player_id = args.args.player_id; 
-                    let min_shape = args.args.min_shape;
-                    let max_shape = args.args.max_shape;
-                    let footprint_used = args.args.footprint_used;
-                    let dice_value = args.args.dice;
+                    player_id = this.player_id; 
+                    let min_shape = args.args[player_id].min_shape;
+                    let max_shape = args.args[player_id].max_shape;
+                    let footprint_used = args.args[player_id].footprint_used;
+                    let dice_value = args.args[player_id].dice;
 
                     for (var i=min_shape; i<=max_shape; i++) {
                         let elmt_id = 'shape_selection_'+player_id+'_'+i;
@@ -526,20 +516,21 @@ function (dojo, declare) {
                     break;
 
                 case 'playerTurnCatSelection':
+                    console.log(args.args);
                     this.updatePlayerBoardForCatSelection( args.args );
 
-                    player_id = args.args.player_id;
+                    player_id = this.player_id;
 
-                    if( this.isCurrentPlayerActive() ) {
-                        for ( var id in args.args.score_cat ) {
-                            if ( args.args.score_cat[id] == null ) {
+                    // if( this.isCurrentPlayerActive() ) {
+                        for ( var id in args.args[player_id].score_cat ) {
+                            if ( args.args[player_id].score_cat[id] == null ) {
                                 let elmt_id = 'cat_selection_' + player_id + '_'+ (parseInt(id) + 1);
                                 let elmt = $(elmt_id);
 
                                 this.connections.push( dojo.connect( elmt , 'click', () => this.onClickCat(elmt_id) ) );
                             }
                         }
-                    }
+                    // }
 
                     break;
 
@@ -1107,9 +1098,9 @@ function (dojo, declare) {
             // console.log( '$$$$ : updatePlayerBoardForShapeSelection' );
             // console.log( args );
 
-            let player_id = args.player_id; 
-            let min_shape = args.min_shape;
-            let max_shape = args.max_shape;
+            let player_id = this.player_id; 
+            let min_shape = args[player_id].min_shape;
+            let max_shape = args[player_id].max_shape;
 
             for (var i=min_shape; i<=max_shape; i++) {
                 dojo.addClass($('shape_selection_'+player_id+'_'+i), 'ctc_shape_selectionnable');
@@ -1120,15 +1111,15 @@ function (dojo, declare) {
 
         updatePlayerBoardForCatSelection: function( args ) {
             // console.log( '$$$$ : updatePlayerBoardForCatSelection' );
-            // console.log( args );
+            console.log( args );
             // console.log( args.score_cat );
 
-            player_id = args.player_id;
-            possible_sub_scoring = args.possible_sub_scoring;
+            let player_id = this.player_id;
+            let possible_sub_scoring = args[player_id].possible_sub_scoring;
 
-            for ( var id in args.score_cat ) {
+            for ( var id in args[player_id].score_cat ) {
                 // console.log( args.score_cat );
-                if ( args.score_cat[id] == null ) {
+                if ( args[player_id].score_cat[id] == null ) {
                     dojo.addClass( 'cat_selection_' + player_id + '_'+ (parseInt(id) + 1), 'ctc_cat_selectionnable');
                     
                     elmt = 'sub_scoring_' + player_id + '_'+ (parseInt(id) + 1);
@@ -1332,8 +1323,7 @@ function (dojo, declare) {
                 { return; }
 
             this.ajaxcall( "/catcafe/catcafe/pass.html", { 
-                                                                    lock: true, 
-                                                                    player_id: args.player_id
+                                                                    lock: true
                                                                  }, 
                          this, function( result ) {
                             
@@ -1363,8 +1353,7 @@ function (dojo, declare) {
                 { return; }
             
             this.ajaxcall( "/catcafe/catcafe/cancelLocationDiceChoice.html", { 
-                                                                    lock: true, 
-                                                                    player_id: args.player_id
+                                                                    lock: true
                                                                  }, 
                          this, function( result ) {
                             
@@ -1394,8 +1383,7 @@ function (dojo, declare) {
                 { return; }
             
             this.ajaxcall( "/catcafe/catcafe/cancelLocationChoice.html", { 
-                                                                    lock: true, 
-                                                                    player_id: args.player_id
+                                                                    lock: true
                                                                  }, 
                          this, function( result ) {
                             
@@ -1425,8 +1413,7 @@ function (dojo, declare) {
                 { return; }
             
             this.ajaxcall( "/catcafe/catcafe/cancelShapeChoice.html", { 
-                                                                    lock: true, 
-                                                                    player_id: args.player_id
+                                                                    lock: true
                                                                  }, 
                          this, function( result ) {
                             
