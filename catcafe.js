@@ -516,7 +516,7 @@ function (dojo, declare) {
                     break;
 
                 case 'playerTurnCatSelection':
-                    console.log(args.args);
+                    // console.log(args.args);
                     this.updatePlayerBoardForCatSelection( args.args );
 
                     player_id = this.player_id;
@@ -1111,7 +1111,7 @@ function (dojo, declare) {
 
         updatePlayerBoardForCatSelection: function( args ) {
             // console.log( '$$$$ : updatePlayerBoardForCatSelection' );
-            console.log( args );
+            // console.log( args );
             // console.log( args.score_cat );
 
             let player_id = this.player_id;
@@ -1493,12 +1493,12 @@ function (dojo, declare) {
 
             // console.log(notif.args);
 
-            picked_dice = 'dice_' + notif.args.dice_id + "_" + notif.args.dice_face;
+            let picked_dice = 'dice_' + notif.args.dice_id + "_" + notif.args.dice_face;
 
-            var slide = this.slideToObject( $( picked_dice ), $( 'dice_player_' + notif.args.player_id + '_0' ), 1000 );
+            let slide = this.slideToObject( $( picked_dice ), $( 'dice_player_' + notif.args.player_id + '_0' ), 1000 );
+            
             dojo.connect( slide, 'onEnd', this, dojo.hitch( this, function() {
-        			    dojo.addClass( 'dice_player_' + notif.args.player_id + '_0', 'ctc_dice_' + notif.args.dice_face );
-
+            		    dojo.addClass( 'dice_player_' + notif.args.player_id + '_0', 'ctc_dice_' + notif.args.dice_face );
                         dojo.destroy( picked_dice );
        	    }));
             slide.play();
