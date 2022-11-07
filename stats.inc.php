@@ -76,6 +76,30 @@ $stats_type = array(
         "turns_number" => array("id" => 10,
                     "name" => totranslate("Number of turns"),
                     "type" => "int" ),
+
+        "pass_number" => array("id" => 90,
+                    "name" => totranslate("Number of passed turns"),
+                    "type" => "int" ),
+
+        "footprints_number" => array("id" => 100,
+                    "name" => totranslate("Number of footprints"),
+                    "type" => "int" ),
+
+        "used_footprints_number" => array("id" => 110,
+                    "name" => totranslate("Number of used footprints"),
+                    "type" => "int" ),
+
+        "remaining_footprints_number" => array("id" => 120,
+                    "name" => totranslate("Number of remaining footprints"),
+                    "type" => "int" ),
+
+        "completed_columns" => array("id" => 130,
+                    "name" => totranslate("Number of completed columns"),
+                    "type" => "int" ),
+
+        "completed_columns_with_max_score" => array("id" => 120,
+                    "name" => totranslate("Number of completed columns with highest score"),
+                    "type" => "int" ),
     
         "cat_house" => array("id" => 20,
                     "name" => totranslate("Cat house"),

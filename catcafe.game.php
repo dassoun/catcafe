@@ -91,7 +91,12 @@ class catcafe extends Table
         //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
 
-        // initStat( "player", "turns_number", 0 );
+        self::initStat( "player", "turns_number", 0 );
+        self::initStat( "player", "pass_number", 0 );
+        self::initStat( "player", "footprints_number", 1 );
+        self::initStat( "player", "used_footprints_number", 0);
+        self::initStat( "player", "completed_columns", 0 );
+        self::initStat( "player", "completed_columns_with_max_score", 0);
         self::initStat( "player", "cat_house", 0 );
         self::initStat( "player", "ball_of_yarn", 0 );
         self::initStat( "player", "butterfly_toy", 0 );
@@ -762,6 +767,10 @@ class catcafe extends Table
             $player_name = self::getPlayerNameById($zombie_player_id);
         }
 
+        // Update stats
+        self::incStat( 1, "turns_number" );
+        self::incStat( 1, "turns_number", $player_id );
+
         $sql = "SELECT id FROM dice WHERE id = ".$dice_id." AND player_id is null";
         $dice = self::getObjectFromDb( $sql );
 
@@ -824,6 +833,9 @@ class catcafe extends Table
         self::checkAction( 'pass' );
 
         $player_id = self::getCurrentPlayerId();
+
+        // Update stats
+        self::incStat( 1, "pass_number", $player_id );
         
         // Update available footprints
         $sql = "UPDATE player SET has_passed = true, footprint_available = LEAST(footprint_available + ".$this->gameConstants["FOOTPRINTS_GAINED_PASSING"].", (".$this->gameConstants["FOOTPRINTS_TOTAL"]." - footprint_used)) WHERE player_id = '$player_id'";
@@ -1718,9 +1730,13 @@ class catcafe extends Table
 
                         // self::trace( "!!!!!!!!!!!!!!!!!!!!! $player_id / $i" );
 
+                        self::incStat( 1, "completed_columns", $player_id );
+
                         // We can score the highest only if we have a cat house in the column, and the column not not already be filled by anyone
                         if ( $cat_house_in_col && $initial_column_score_state["global"][$i] == 0 ) {
                             // self::trace( "!!!!!!!!!!!!!!!!!!!!! $player_id / $i MAX" );
+
+                            self::incStat( 1, "completed_columns_with_max_score", $player_id );
 
                             $sql = "UPDATE player SET score_col_".($i+1)." = ".$this->gameConstants["COL_SUB_SCORING_COL_MAX"][$i]." WHERE player_id = '$player_id'";
                             self::DbQuery($sql);
@@ -1849,12 +1865,12 @@ class catcafe extends Table
     function stStatsCalculation()
     {
         $sql = "SELECT 
-                    player_id, player_name,
+                    player_id, player_name, footprint_available, footprint_used,
                     (score_cat_1 + score_cat_2 + score_cat_3 + score_cat_4 + score_cat_5 + score_cat_6 + score_col_1 + score_col_2 + score_col_3 + score_col_4 + score_col_5) AS score_total
                 FROM 
                     player 
                 ORDER BY 
-                score_total DESC";
+                    score_total DESC";
         $players = self::getCollectionFromDb( $sql );
 
         // $result = array();
@@ -1885,6 +1901,10 @@ class catcafe extends Table
             $columnsScore = $this->getColumnsScore($player_id);
             // $catFootprintsScore = $this->getCatFootprintsScore($player_id);
             $catFootprintsScore = 0;
+
+            self::setStat( $player['footprint_available'] + $player['footprint_used'], "footprints_number", $player_id );
+            self::setStat( $player['footprint_used'], "used_footprints_number", $player_id );
+            self::setStat( $player['footprint_available'], "remaining_footprints_number", $player_id );
 
             self::setStat( $catHouseScore, "cat_house", $player_id );
             self::setStat( $ballOfYarnScore, "ball_of_yarn", $player_id );
