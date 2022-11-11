@@ -76,7 +76,7 @@ class catcafe extends Table
             $color = array_shift( $default_colors );
             $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
         }
-        $sql .= implode( $values, ',' );
+        $sql .= implode( ',', $values );
         self::DbQuery( $sql );
         self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
@@ -121,7 +121,7 @@ class catcafe extends Table
                 $values[] = "('".$player_id."','".$pos->x."','".$pos->y."')";
             }
         }
-        $sql .= implode( $values, ',' );
+        $sql .= implode( ',', $values );
         self::DbQuery( $sql );
 
         $this->rollDices();
@@ -699,7 +699,7 @@ class catcafe extends Table
         }
 
         $sql = "INSERT INTO dice (id, dice_value) VALUES ";
-        $sql .= implode( $values, ',' );
+        $sql .= implode( ',', $values );
         self::DbQuery( $sql );
     }
 
@@ -1617,7 +1617,7 @@ class catcafe extends Table
         }
 
         $sql = "INSERT INTO dice (id, dice_value) VALUES ";
-        $sql .= implode( $values, ',' );
+        $sql .= implode( ',', $values );
         self::DbQuery( $sql );
 
         $this->gamestate->nextState("");

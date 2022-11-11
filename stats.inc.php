@@ -97,7 +97,7 @@ $stats_type = array(
                     "name" => totranslate("Number of completed columns"),
                     "type" => "int" ),
 
-        "completed_columns_with_max_score" => array("id" => 120,
+        "completed_columns_with_max_score" => array("id" => 140,
                     "name" => totranslate("Number of completed columns with highest score"),
                     "type" => "int" ),
     
