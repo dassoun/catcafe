@@ -18,8 +18,7 @@
 define([
     "dojo","dojo/_base/declare", "dojo/query", "dojo/aspect", "dojo/dom", "dojo/_base/connect",
     "ebg/core/gamegui",
-    "ebg/counter"//, 
-    //g_gamethemeurl + "./modules/CTCTooltips.js"
+    "ebg/counter"
 ],
 function (dojo, declare) {
     return declare("bgagame.catcafe", ebg.core.gamegui, {
