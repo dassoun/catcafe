@@ -394,6 +394,8 @@ function (dojo, declare) {
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
+            this.notifqueue.setIgnoreNotificationCheck( 'showTurn', (notif) => (notif.args.player_id == this.player_id) );
+
             // console.log( "Ending game setup" );
         },
        
@@ -1485,6 +1487,7 @@ function (dojo, declare) {
             dojo.subscribe( 'columnSubScoringErased', this, "notif_columnSubScoringErased" );
             dojo.subscribe( 'score', this, "notif_score" );
             dojo.subscribe( 'backToTurnDrawingPhase1', this, "notif_backToTurnDrawingPhase1" );
+            dojo.subscribe( 'showTurn', this, "notif_showTurn" );
             dojo.subscribe( 'displayFinalScore', this, "notif_displayFinalScore" );
         },  
         
@@ -1831,6 +1834,10 @@ function (dojo, declare) {
             this.updateFootprintsCounters( notif.args.player_id, notif.args.footprint_used, notif.args.footprint_available );
 
             // console.log( '**** Notification : backToTurnDrawingPhase1 Ended' );
+        },
+
+        notif_showTurn: function( notif ) {
+
         },
 
         notif_displayFinalScore: function( notif ) {

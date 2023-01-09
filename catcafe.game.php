@@ -920,7 +920,7 @@ class catcafe extends Table
         }
 
         // Notify all players
-        self::notifyAllPlayers( "diceForLocationChosen", "", array(
+        self::notifyPlayer( $player_id, "diceForLocationChosen", "", array(
             'player_id' => $player_id,
             'player_name' => self::getCurrentPlayerName(),
             'first_chosen_dice_num' => $num_player_dice,
@@ -1098,7 +1098,7 @@ class catcafe extends Table
 
 
         // Notify all players
-        self::notifyAllPlayers( "drawingLocationChosen", "", array(
+        self::notifyPlayer( $player_id, "drawingLocationChosen", "", array(
             'player_id' => $player_id,
             'player_name' => self::getCurrentPlayerName(),
             'x' => $x,
@@ -1195,7 +1195,7 @@ class catcafe extends Table
                 break;
         }
 
-        self::notifyAllPlayers( "shapeChosen", clienttranslate( '${player_name} has drawn ${ctc_log_shape} on column ${column_number}, floor ${floor_numer}' ), array(
+        self::notifyPlayer( $player_id, "shapeChosen", clienttranslate( '${player_name} has drawn ${ctc_log_shape} on column ${column_number}, floor ${floor_numer}' ), array(
             'player_id' => $player_id,
             'player_name' => self::getCurrentPlayerName(),
             'x' => $x,
@@ -1267,7 +1267,7 @@ class catcafe extends Table
                 break;
         }
 
-        self::notifyAllPlayers( "catChosen", clienttranslate( '${player_name} has chosen the cat with ${ctc_log_shape}' ), array(
+        self::notifyPlayer( $player_id, "catChosen", clienttranslate( '${player_name} has chosen the cat with ${ctc_log_shape}' ), array(
             'player_id' => $player_id,
             'player_name' => self::getCurrentPlayerName(),
             'x' => $x,
@@ -1692,6 +1692,13 @@ class catcafe extends Table
     {
         // self::trace( "stColumnScoring" );
 
+        // Notify moves
+        $players = $this->getAllDatas()["players"];
+
+        foreach ($players as $player_id => $info) {
+
+        }
+
         // Initial state of column score, before this ans of round calculation
         $initial_column_score_state = $this->getColumnScoreState();
 
@@ -2087,7 +2094,8 @@ class catcafe extends Table
 //        // Please add your future database scheme changes here
 //
 //
+        if( $from_version <= 2211080942 ) {
 
-
+        }
     }    
 }
